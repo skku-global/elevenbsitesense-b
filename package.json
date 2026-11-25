@@ -1,0 +1,8 @@
+{
+  "name": "elevenb-option-b",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": { "build:site": "python3 build.py" },
+  "dependencies": { "@vercel/functions": "^3.11.3" }
+}
