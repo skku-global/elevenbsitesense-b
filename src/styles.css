@@ -486,7 +486,8 @@ footer li { list-style: none; }
 .home-shell .scene { background: radial-gradient(ellipse at 70% 24%, #b8935a30, transparent 60%), linear-gradient(135deg, #1b1a1c, #383127 55%, #0a0a0b); }
 .home-shell .scene::after { opacity: .15; background: repeating-linear-gradient(110deg, transparent 0 100px, #f4f1ea14 102px, transparent 104px 210px); }
 .home-shell :is(.scene-light, .scene-structure, .scene-surface, .scene-water) { display: none; }
-.home-abroad .feature-image { aspect-ratio: 4/5; }
+.home-abroad .feature-image { aspect-ratio: 16/10; }
+.home-abroad .abroad-client-image img { object-fit: contain; }
 .home-abroad h2 { max-width: 16ch; }
 .home-abroad p { margin-bottom: 30px; color: var(--home-grey); font-size: 13px; line-height: 1.9; max-width: 48ch; }
 .home-shell .home-process h2 { margin-bottom: 48px; }

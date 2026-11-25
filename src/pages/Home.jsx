@@ -8,6 +8,7 @@ import { BRAND, SITE, LEGAL, EMAIL, PHONES, MAIN, POOL, OTHER } from '../data/si
 import { galleryFor } from '../components/GalleryData.js'
 import { content } from '../data/content.js'
 import { company } from '../data/company.js'
+import abroadClient from '../assets/images/abroad/abroad-client.jpeg'
 
 const STAGES = [[0, 'Excavating the site'], [0.9, 'Pouring the footing'], [1.3, 'Raising the columns'], [2.6, 'Casting the slabs'], [3.4, 'Floors and paving'], [4.2, 'Ceilings and interiors'], [4.8, 'Painting'], [5.7, 'Handed over. Hover a service.']]
 
@@ -133,7 +134,7 @@ export default function Home() {
 
       <section className="home-abroad" aria-labelledby="home-abroad-heading">
         <div className="w cols">
-          <ProjectImage slug="swimming-pool-construction" alt="A recent pool project" className="feature-image" />
+          <ProjectImage src={abroadClient} alt="Client reviewing their project from abroad" className="feature-image abroad-client-image" />
           <div>
             <span className="home-kicker">At home, wherever you are</span>
             <h2 id="home-abroad-heading">Living abroad? Build with confidence.</h2>
