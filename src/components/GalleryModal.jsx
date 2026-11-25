@@ -27,24 +27,27 @@ export function GalleryProvider({ children }) {
     if (!open) return
     setOpen(false)
     busy.current = true
-    setTimeout(() => { setMounted(false); busy.current = false; last.current?.focus?.() }, 900)
+    const delay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 400
+    setTimeout(() => { setMounted(false); busy.current = false }, delay)
   }, [open])
 
   useEffect(() => {
     document.documentElement.style.overflow = mounted ? 'hidden' : ''
+    if (!mounted) last.current?.focus?.({ preventScroll: true })
     return () => { document.documentElement.style.overflow = '' }
   }, [mounted])
 
   useEffect(() => {
     if (!open) return
     const onKey = (e) => {
+      if (e.defaultPrevented) return
       if (e.key === 'Escape') close()
       else if (e.key === 'ArrowRight') control.current?.go(1)
       else if (e.key === 'ArrowLeft') control.current?.go(-1)
       else if (e.key === 'Tab' && panel.current) {
         const f = panel.current.querySelectorAll('a[href],button,[tabindex="0"]')
         const a = f[0], z = f[f.length - 1]
-        if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus() }
+        if (e.shiftKey && (document.activeElement === a || document.activeElement === panel.current)) { e.preventDefault(); z.focus() }
         else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus() }
       }
     }
@@ -55,7 +58,7 @@ export function GalleryProvider({ children }) {
   const d = slug ? galleryFor(slug) : null
   return (
     <Ctx.Provider value={openGallery}>
-      {children}
+      <div inert={mounted ? true : undefined}>{children}</div>
       {mounted && d && (
         <div className={`gm${open ? ' open' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) close() }}>
           <div className="gm-bg" onClick={close} />

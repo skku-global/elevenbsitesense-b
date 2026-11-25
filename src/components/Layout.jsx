@@ -1,6 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { GalleryProvider } from './GalleryModal.jsx'
+import { Icon } from './Visuals.jsx'
 import { BRAND, LEGAL, RC, ADDR, EMAIL, PHONES, WA, POOL, OTHER } from '../data/site.js'
 
 const NAV = [['/swimming-pool-construction/', 'Swimming pools'], ['/services/', 'Other services'], ['/build-from-abroad/', 'Build from abroad'], ['/contact/', 'Contact']]
@@ -11,20 +12,69 @@ function ScrollToTop() {
   return null
 }
 
+function RevealOnScroll() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (motion.matches || !('IntersectionObserver' in window)) return
+    const targets = document.querySelectorAll('main section .w > :not(.grid):not(.cols):not(.stats-grid), main .cols > *, main .grid > *, main .steps > li, main .stage > *')
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(({ isIntersecting, target }) => {
+        if (!isIntersecting) return
+        target.classList.add('is-visible')
+        target.classList.remove('reveal-pending')
+        observer.unobserve(target)
+      })
+    }, { threshold: 0.08, rootMargin: '0px 0px -24px 0px' })
+    targets.forEach((target) => {
+      target.classList.add('reveal')
+      if (target.getBoundingClientRect().top >= window.innerHeight) target.classList.add('reveal-pending')
+      observer.observe(target)
+    })
+    const showAll = () => {
+      if (!motion.matches) return
+      targets.forEach((target) => target.classList.remove('reveal-pending'))
+      observer.disconnect()
+    }
+    motion.addEventListener('change', showAll)
+    return () => {
+      observer.disconnect()
+      motion.removeEventListener('change', showAll)
+      targets.forEach((target) => target.classList.remove('reveal-pending'))
+    }
+  }, [pathname])
+  return null
+}
+
 export default function Layout() {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const { pathname } = useLocation()
+  const isHome = pathname === '/'
+  useEffect(() => { setMenuOpen(false) }, [pathname])
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 80)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [pathname])
   return (
     <GalleryProvider>
+      <div className={`site-frame home-frame${isHome ? '' : ' inner-frame'}`}>
       <ScrollToTop />
-      <header>
+      <RevealOnScroll />
+      <a className="skip-link" href="#main-content">Skip to content</a>
+      <header className={`site-header home-header${scrolled ? ' is-scrolled' : ''}`}>
         <div className="w">
-          <Link className="logo" to="/">{BRAND.toUpperCase()}</Link>
-          <nav aria-label="Main">
-            {NAV.map(([u, t]) => <NavLink key={u} to={u} end>{t}</NavLink>)}
+          <Link className="logo" to="/"><span className="brand-mark"><Icon name="mark" /></span><span>{BRAND.toUpperCase()}</span></Link>
+          <button className="menu-toggle" type="button" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} aria-controls="main-navigation" onClick={() => setMenuOpen((value) => !value)} onKeyDown={(event) => { if (event.key === 'Escape') setMenuOpen(false) }}><Icon name={menuOpen ? 'close' : 'menu'} /></button>
+          <nav id="main-navigation" aria-label="Main" className={menuOpen ? 'menu-open' : undefined} onKeyDown={(event) => { if (event.key === 'Escape') { setMenuOpen(false); document.querySelector('.menu-toggle')?.focus() } }}>
+            {NAV.map(([u, t]) => <NavLink key={u} className={u === '/contact/' ? 'home-nav-contact' : undefined} to={u} end>{t}</NavLink>)}
           </nav>
-          <Link className="btn" to="/contact/">Get a free quote</Link>
+          {!isHome && <Link className="btn header-quote" to="/contact/">Get a free quote<Icon name="arrow" /></Link>}
         </div>
       </header>
-      <main><Outlet /></main>
+      <main id="main-content" className={isHome ? undefined : 'home-shell inner-pages'} tabIndex={-1}><Outlet /></main>
       <footer>
         <div className="w">
           <div className="grid">
@@ -42,7 +92,8 @@ export default function Layout() {
           </div>
         </div>
       </footer>
-      <a className="wa" href={`https://wa.me/${WA}`}>WhatsApp us</a>
+      <div className="contact-dock"><Link className="btn dock-quote" to="/contact/">Get a free quote<Icon name="arrow" /></Link><a className="wa" href={`https://wa.me/${WA}`}><Icon name="chat" />WhatsApp us</a></div>
+      </div>
     </GalleryProvider>
   )
 }

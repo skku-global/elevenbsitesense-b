@@ -41,7 +41,7 @@ export default function Contact() {
     <>
       <Seo path="/contact/" title={`Contact & Free Quote | ${BRAND}`} desc="Request a free quote for a swimming pool or building project in Nigeria. We reply within one working day." ld={[breadcrumbLd(crumbs)]} />
       <Hero h1="Get a free quote" p="Tell us what you want to build and where. We reply within one working day." crumbs={crumbs} buttons={false} />
-      <section><div className="w cols">
+      <section className="contact-section"><div className="w cols">
         <form onSubmit={submit} noValidate>
           <label>Your name<input name="name" autoComplete="name" {...field('name')} />{err('name')}</label>
           <label>Email<input type="email" name="email" autoComplete="email" {...field('email')} />{err('email')}</label>
@@ -58,7 +58,7 @@ export default function Contact() {
           <button className="btn" type="submit" disabled={status.kind === 'sending'}>Send enquiry</button>
           <p className="msg" role="status" aria-live="polite">{status.text}</p>
         </form>
-        <div>
+        <div className="contact-info">
           <h2>Or reach us directly</h2>
           <ul className="tick">
             {PHONES.map((p) => <li key={p.number}><a href={`https://wa.me/${p.international}`}>WhatsApp or call {p.number}</a></li>)}

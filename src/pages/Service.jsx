@@ -1,4 +1,6 @@
 import Drawing from '../components/Drawing.jsx'
+import { ProjectImage } from '../components/Visuals.jsx'
+import { BeforeAfter } from '../components/Trust.jsx'
 import { Seo, Hero, ServiceCard, Steps, Faq, Cta, Section } from '../components/Parts.jsx'
 import { BRAND, SITE, bySlug, POOL, breadcrumbLd, faqLd } from '../data/site.js'
 
@@ -15,17 +17,18 @@ export default function Service({ slug }) {
   return (
     <>
       <Seo path={path} title={`${s.h1} | ${BRAND}`} desc={s.meta} ld={ld} />
-      <Hero h1={s.h1} p={s.intro} crumbs={crumbs}
+      <Hero h1={s.h1} p={s.intro} crumbs={crumbs} slug={slug}
         side={<aside className="plate"><Drawing active={s.part} name={s.title} />
           <div className="cap"><span className="cn"><b>{s.title}</b></span><span className="cl">Highlighted in the building</span></div></aside>} />
       <section><div className="w cols">
         <div><h2>What’s included</h2><ul className="tick">{s.includes.map((i) => <li key={i}>{i}</li>)}</ul></div>
-        <div className="ph" role="img" aria-label={`Add a project photo of ${s.title.toLowerCase()}`}>Add a real project photo here<br />(name the file {slug}.jpg and write a clear alt text)</div>
+        <ProjectImage slug={slug} alt={`${s.title} project detail`} className="feature-image" />
       </div></section>
-      {first && <Section alt><h2>Types of pool we build</h2><div className="grid">{POOL.slice(1).map((c) => <ServiceCard key={c.slug} slug={c.slug} />)}</div></Section>}
+      {first && <Section alt><h2>Types of pool we build</h2><div className="grid service-grid">{POOL.slice(1).map((c) => <ServiceCard key={c.slug} slug={c.slug} />)}</div></Section>}
       <Section alt><h2>How the work goes</h2><Steps /></Section>
+      {slug === 'pool-renovation-and-repair' && <BeforeAfter />}
       <Section><h2>Common questions</h2><Faq faqs={s.faqs} /></Section>
-      <Section alt><h2>Related services</h2><div className="grid">{s.related.map((r) => <ServiceCard key={r} slug={r} />)}</div></Section>
+      <Section alt><h2>Related services</h2><div className="grid service-grid">{s.related.map((r) => <ServiceCard key={r} slug={r} />)}</div></Section>
       <Cta />
     </>
   )

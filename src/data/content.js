@@ -1,5 +1,53 @@
 // Site content. Edit copy here; pages are generated from it.
 export const content = {
+  "home": {
+    "heroCopy": "Swimming pools and building works in Ibadan, Nigeria.",
+    // Layout examples supplied for the design, NOT verified company claims.
+    // Replace these values with approved figures and remove the sample labels.
+    "stats": {
+      "placeholder": true,
+      "note": "Layout placeholders · replace with verified figures",
+      "items": [
+        { "value": "10+", "label": "Years · sample" },
+        { "value": "8", "label": "Services · sample" },
+        { "value": "100%", "label": "Fixed price quotes · sample" }
+      ]
+    }
+  },
+  // Editable design placeholders. Replace with verified figures and approved
+  // client feedback before removing the sample labels; no claims enter JSON-LD.
+  "trust": {
+    "stats": {
+      "heading": "Built on trust",
+      "note": "Sample figures · awaiting verified project data",
+      "items": [
+        { "value": "50+", "label": "Projects · sample" },
+        { "value": "12+", "label": "Pools built · sample" },
+        { "value": "98%", "label": "Client satisfaction · sample" },
+        { "value": "10+", "label": "Years of team experience · sample" }
+      ]
+    },
+    "testimonials": {
+      "heading": "The people behind every project",
+      "note": "Sample testimonials · replace with approved client reviews",
+      "items": [
+        { "quote": "From the first conversation to the finishing touches, we always knew what was happening. The pool has become our favourite place at home.", "name": "Sample client A", "initials": "A", "project": "Residential pool · Ibadan" },
+        { "quote": "Being abroad, the regular site updates made all the difference. We could follow the progress and make decisions with confidence.", "name": "Sample client B", "initials": "B", "project": "Build from abroad · UK" },
+        { "quote": "A careful team with an eye for the details. The paving and finish brought the whole property together.", "name": "Sample client C", "initials": "C", "project": "Building and finishing · Lagos" }
+      ]
+    },
+    "comparison": {
+      "eyebrow": "From possibility to a place you love",
+      "heading": "See the difference",
+      "description": "A new chapter for your outdoor space, from the groundwork to the first swim.",
+      "note": "Illustrative preview · add a matched pair of real project photos",
+      "slug": "pool-renovation-and-repair",
+      "before": { "index": 0, "label": "Before", "alt": "Pool before renovation" },
+      "after": { "index": 1, "label": "After", "alt": "Pool after renovation" },
+      "controlLabel": "Compare the pool before and after renovation",
+      "instruction": "Drag to compare, or use the arrow keys"
+    }
+  },
   "services": [
     {
       "slug": "swimming-pool-construction",
