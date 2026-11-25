@@ -4,13 +4,12 @@ import Drawing from '../components/Drawing.jsx'
 import Slider from '../components/Slider.jsx'
 import { Seo, ServiceCard, Steps, Cta } from '../components/Parts.jsx'
 import { Icon, ProjectImage } from '../components/Visuals.jsx'
-import { BRAND, SITE, LEGAL, EMAIL, PHONES, MAIN, POOL, OTHER, galleryFor } from '../data/site.js'
+import { BRAND, SITE, LEGAL, EMAIL, PHONES, MAIN, POOL, OTHER } from '../data/site.js'
+import { galleryFor } from '../components/GalleryData.js'
 import { content } from '../data/content.js'
 import { company } from '../data/company.js'
 
 const STAGES = [[0, 'Excavating the site'], [0.9, 'Pouring the footing'], [1.3, 'Raising the columns'], [2.6, 'Casting the slabs'], [3.4, 'Floors and paving'], [4.2, 'Ceilings and interiors'], [4.8, 'Painting'], [5.7, 'Handed over. Hover a service.']]
-const heroPhotos = import.meta.glob('../assets/images/hero/1.jpg', { eager: true, query: '?url', import: 'default' })
-const heroPhoto = heroPhotos['../assets/images/hero/1.jpg']
 
 const org = {
   '@context': 'https://schema.org', '@type': 'GeneralContractor', name: BRAND, legalName: LEGAL, url: SITE,
@@ -22,7 +21,6 @@ export default function Home() {
   const [run, setRun] = useState(0)
   const [active, setActive] = useState(null)
   const [buildStarted, setBuildStarted] = useState(false)
-  const [photoFailed, setPhotoFailed] = useState(false)
   const [cap, setCap] = useState({ name: STAGES[0][1], label: 'Stage 1 of 7' })
   const buildPanel = useRef(null)
   const activePart = useRef(null)
@@ -58,7 +56,6 @@ export default function Home() {
     setActive(s.part)
   }
   const rows = [MAIN, ...OTHER]
-  const photoAvailable = heroPhoto && !photoFailed
 
   return (
     <div className="home-shell">
@@ -67,6 +64,10 @@ export default function Home() {
         ld={[org]} />
 
       <section className="home-hero" aria-labelledby="home-heading">
+        <picture className="home-hero-media">
+          <source media="(max-width: 767px)" srcSet="/images/hero-mobile.webp" type="image/webp" />
+          <img src="/images/hero-desktop.webp" alt="Swimmer gliding through a clear blue swimming pool" fetchPriority="high" decoding="async" />
+        </picture>
         <div className="w home-hero-layout">
           <div className="home-hero-heading home-intro-heading">
             <span className="home-kicker">Ibadan, Nigeria</span>
@@ -83,9 +84,6 @@ export default function Home() {
         </div>
       </section>
 
-      <figure className={'home-photo-band' + (photoAvailable ? '' : ' home-photo-fallback')} aria-label={photoAvailable ? undefined : 'Project photography placeholder'}>
-        {photoAvailable && <img src={heroPhoto} alt="Eleven B Site Sense pool and building project" loading="lazy" decoding="async" onError={() => setPhotoFailed(true)} />}
-      </figure>
 
       <section className="home-services" id="home-services" aria-labelledby="home-services-heading">
         <div className="w">

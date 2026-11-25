@@ -1,13 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Slider from './Slider.jsx'
-import { galleryFor } from '../data/site.js'
+import { galleryFor } from './GalleryData.js'
 
 const Ctx = createContext(() => {})
 export const useGallery = () => useContext(Ctx)
 
 export function GalleryProvider({ children }) {
   const [slug, setSlug] = useState(null)
+  const [initialIndex, setInitialIndex] = useState(0)
   const [mounted, setMounted] = useState(false)
   const [open, setOpen] = useState(false)
   const busy = useRef(false)
@@ -15,10 +16,11 @@ export function GalleryProvider({ children }) {
   const panel = useRef(null)
   const control = useRef(null)
 
-  const openGallery = useCallback((k, from) => {
+  const openGallery = useCallback((k, from, index = 0) => {
     if (busy.current) return
     last.current = from || document.activeElement
     setSlug(k)
+    setInitialIndex(index)
     setMounted(true)
     requestAnimationFrame(() => requestAnimationFrame(() => { setOpen(true); setTimeout(() => panel.current?.focus(), 150) }))
   }, [])
@@ -68,7 +70,7 @@ export function GalleryProvider({ children }) {
               <button className="gm-x" type="button" aria-label="Close gallery" onClick={close}>&times;</button>
             </div>
             <div className="gm-b">
-              <div className="gm-s"><Slider key={slug} d={d} controlRef={control} /></div>
+              <div className="gm-s"><Slider key={slug} d={d} initialIndex={initialIndex} eagerFirst controlRef={control} /></div>
               <div className="gm-i">
                 <p className="gm-l">{d.d}</p>
                 <ul className="tick">{d.i.map((x) => <li key={x}>{x}</li>)}</ul>

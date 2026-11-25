@@ -21,10 +21,10 @@ export function Seo({ path, title, desc, ld = [] }) {
   )
 }
 
-export function Hero({ h1, p, crumbs = [], buttons = true, side = null, slug = 'swimming-pool-construction', home = false }) {
+export function Hero({ h1, p, crumbs = [], buttons = true, side = null, slug = 'swimming-pool-construction', home = false, imagePhoto }) {
   return (
     <div className={`hero${side ? ' two' : ''}${home ? ' hero-home' : ''}`}>
-      <ProjectImage slug={slug} fallbackSlug={home ? 'work' : 'hero'} decorative eager className="hero-image" />
+      <ProjectImage src={imagePhoto?.src} alt={imagePhoto?.alt} width={imagePhoto?.width} height={imagePhoto?.height} slug={slug} fallbackSlug={home ? 'work' : 'hero'} decorative={!imagePhoto} eager className="hero-image" />
       <div className="hero-overlay" aria-hidden="true" />
       <div className="w">
         <div className="hero-copy">
@@ -43,6 +43,7 @@ export function Hero({ h1, p, crumbs = [], buttons = true, side = null, slug = '
         {side}
       </div>
       <WaterWave />
+      {imagePhoto?.label && <span className="photo-tag hero-photo-tag">{imagePhoto.label}</span>}
     </div>
   )
 }

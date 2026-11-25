@@ -648,3 +648,23 @@ footer li { list-style: none; }
 @media (min-width: 1440px) {
   .inner-frame .header-quote { display: inline-flex !important; min-height: 50px; padding: 14px 20px; font-size: 9px; }
 }
+
+.gallery-photo { position: relative; width: 100%; height: 100%; }
+.gallery-photo > .project-image { width: 100%; height: 100%; }
+.photo-tag { position: absolute; z-index: 3; left: 16px; bottom: 28px; max-width: calc(100% - 32px); padding: 7px 12px; background: #0a0a0bea; color: #F4F1EA; border: 1px solid #b8935a88; font: 500 10px/1.5 var(--f); letter-spacing: .04em; pointer-events: none; }
+.hero-photo-tag { left: auto; right: 26px; bottom: 22px; }
+.gs { pointer-events: none; }
+.gs.on { pointer-events: auto; }
+.gallery-open-photo { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: #0A0A0B; cursor: zoom-in; }
+.gallery-open-photo:focus-visible { outline: 3px solid #F4F1EA; outline-offset: -6px; box-shadow: inset 0 0 0 9px #0A0A0B; }
+.service-gallery-preview { position: relative; display: block; width: 100%; padding: 0; overflow: hidden; border: 0; background: #0A0A0B; cursor: zoom-in; }
+.service-gallery .sv { aspect-ratio: 4/3; border-radius: 0; box-shadow: none; }
+.gm .gallery-photo img { object-fit: contain; background: #0A0A0B; }
+
+.home-shell .home-hero { position: relative; isolation: isolate; overflow: hidden; }
+.home-hero-media { position: absolute; inset: 0; z-index: -1; }
+.home-hero-media img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+.home-hero-media::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,.45) 0%, rgba(0,0,0,.35) 45%, rgba(0,0,0,.65) 100%);
+}

@@ -13,7 +13,7 @@ export function Icon({ name, ...props }) {
 }
 
 // All imagery stays on the existing local photo pipeline; no remote requests.
-export function ProjectImage({ slug = 'swimming-pool-construction', index = 0, fallbackSlug, src, alt, decorative = false, eager = false, className = '', stage }) {
+export function ProjectImage({ slug = 'swimming-pool-construction', index = 0, fallbackSlug, src, alt, width, height, decorative = false, eager = false, className = '', stage }) {
   const source = src || photosFor(slug)[index] || (fallbackSlug && photosFor(fallbackSlug)[index])
   const [failedSource, setFailedSource] = useState(null)
   const kind = /pool|work/.test(slug) ? 'pool' : /tiling|interlock/.test(slug) ? 'paving' : /ceiling|interior/.test(slug) ? 'interior' : 'building'
@@ -21,7 +21,7 @@ export function ProjectImage({ slug = 'swimming-pool-construction', index = 0, f
   return (
     <div className={`project-image ${className}`} aria-hidden={decorative || undefined}>
       {source && source !== failedSource ? (
-        <img src={source} alt={decorative ? '' : description} loading={eager ? 'eager' : 'lazy'} fetchPriority={eager ? 'high' : undefined} decoding="async" onError={() => setFailedSource(source)} />
+        <img src={source} alt={decorative ? '' : description} width={width} height={height} draggable={false} loading={eager ? 'eager' : 'lazy'} fetchPriority={eager ? 'high' : undefined} decoding="async" onError={() => setFailedSource(source)} />
       ) : (
         <div className={`scene scene--${kind}${stage ? ` scene--${stage}` : ''}`} role={decorative ? undefined : 'img'} aria-label={decorative ? undefined : `${description} — illustrative placeholder`}>
           <span className="scene-light" />
