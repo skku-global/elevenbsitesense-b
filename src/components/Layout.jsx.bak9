@@ -1,0 +1,104 @@
+import { useEffect, useState } from 'react'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+import { GalleryProvider } from './GalleryModal.jsx'
+import { Icon } from './Visuals.jsx'
+import { BRAND, LEGAL, RC, ADDR, EMAIL, PHONES, WA, POOL, OTHER } from '../data/site.js'
+
+const NAV = [['/swimming-pool-construction/', 'Swimming pools'], ['/services/', 'Other services'], ['/build-from-abroad/', 'Build from abroad'], ['/contact/', 'Contact']]
+
+function ScrollToTop() {
+  const { pathname, hash } = useLocation()
+  useEffect(() => { if (!hash) window.scrollTo(0, 0) }, [pathname, hash])
+  return null
+}
+
+function RevealOnScroll() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (motion.matches || !('IntersectionObserver' in window)) return
+    const targets = document.querySelectorAll('main section .w > :not(.grid):not(.cols):not(.stats-grid), main .cols > *, main .grid > *, main .steps > li, main .stage > *')
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(({ isIntersecting, target }) => {
+        if (!isIntersecting) return
+        target.classList.add('is-visible')
+        target.classList.remove('reveal-pending')
+        observer.unobserve(target)
+      })
+    }, { threshold: 0.08, rootMargin: '0px 0px -24px 0px' })
+    targets.forEach((target) => {
+      target.classList.add('reveal')
+      if (target.getBoundingClientRect().top >= window.innerHeight) target.classList.add('reveal-pending')
+      observer.observe(target)
+    })
+    const showAll = () => {
+      if (!motion.matches) return
+      targets.forEach((target) => target.classList.remove('reveal-pending'))
+      observer.disconnect()
+    }
+    motion.addEventListener('change', showAll)
+    return () => {
+      observer.disconnect()
+      motion.removeEventListener('change', showAll)
+      targets.forEach((target) => target.classList.remove('reveal-pending'))
+    }
+  }, [pathname])
+  return null
+}
+
+export default function Layout() {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const { pathname } = useLocation()
+  const isHome = pathname === '/'
+  useEffect(() => { setMenuOpen(false) }, [pathname])
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 80)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [pathname])
+  return (
+    <GalleryProvider>
+      <div className={`site-frame home-frame${isHome ? '' : ' inner-frame'}`}>
+      <ScrollToTop />
+      <RevealOnScroll />
+      <a className="skip-link" href="#main-content">Skip to content</a>
+      <header className={`site-header home-header${scrolled ? ' is-scrolled' : ''}`}>
+        <div className="w">
+          <Link className="logo" to="/"><span className="brand-mark"><Icon name="mark" /></span><span>{BRAND.toUpperCase()}</span></Link>
+          <button className="menu-toggle" type="button" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} aria-controls="main-navigation" onClick={() => setMenuOpen((value) => !value)} onKeyDown={(event) => { if (event.key === 'Escape') setMenuOpen(false) }}><Icon name={menuOpen ? 'close' : 'menu'} /></button>
+          <nav id="main-navigation" aria-label="Main" className={menuOpen ? 'menu-open' : undefined} onKeyDown={(event) => { if (event.key === 'Escape') { setMenuOpen(false); document.querySelector('.menu-toggle')?.focus() } }}>
+            {NAV.map(([u, t]) => <NavLink key={u} className={u === '/contact/' ? 'home-nav-contact' : undefined} to={u} end>{t}</NavLink>)}
+          </nav>
+          {!isHome && <Link className="btn header-quote" to="/contact/">Get a free quote<Icon name="arrow" /></Link>}
+        </div>
+      </header>
+      <main id="main-content" className={isHome ? undefined : 'home-shell inner-pages'} tabIndex={-1}><Outlet /></main>
+      <footer>
+        <div className="w">
+          <div className="grid">
+            <div>
+              <h3>{BRAND}</h3>
+              <p>We build it better. Swimming pools and building works in Nigeria, managed for clients at home and abroad.</p>
+              <p>{LEGAL}<br />RC {RC}</p>
+            </div>
+            <div><h3>Swimming pools</h3><ul>{POOL.map((s) => <li key={s.slug}><Link to={`/${s.slug}/`}>{s.title}</Link></li>)}</ul></div>
+            <div><h3>Explore</h3><ul><li><Link to="/about/">About us</Link></li><li><Link to="/services/">Services</Link></li><li><Link to="/projects/">Projects</Link></li><li><Link to="/faq/">FAQ</Link></li><li><Link to="/build-from-abroad/">Build from abroad</Link></li><li><Link to="/contact/">Contact</Link></li></ul></div>
+            <div><h3>Other services</h3><ul>{OTHER.map((s) => <li key={s.slug}><Link to={`/${s.slug}/`}>{s.title}</Link></li>)}</ul></div>
+            <div>
+              <h3>Contact</h3>
+              <ul>
+                {PHONES.map((p, i) => <li key={p.number}><a href={`tel:+${p.international}`}>{p.number}</a>{i === 0 && <> · <a href={`https://wa.me/${p.international}`}>WhatsApp</a></>}</li>)}
+                <li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
+                <li>{ADDR}, Nigeria.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
+      <div className="contact-dock"><Link className="btn dock-quote" to="/contact/">Get a free quote<Icon name="arrow" /></Link><a className="wa" href={`https://wa.me/${WA}`}><Icon name="chat" />WhatsApp us</a></div>
+      </div>
+    </GalleryProvider>
+  )
+}

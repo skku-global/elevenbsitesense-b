@@ -81,15 +81,24 @@ export default function Layout() {
             <div>
               <h3>{BRAND}</h3>
               <p>We build it better. Swimming pools and building works in Nigeria, managed for clients at home and abroad.</p>
-              <p>{ADDR}<br />
-                {PHONES.map((p) => <span key={p.number}><a href={`tel:+${p.international}`}>{p.number}</a><br /></span>)}
-                <a href={`mailto:${EMAIL}`}>{EMAIL}</a></p>
               <p>{LEGAL}<br />RC {RC}</p>
             </div>
             <div><h3>Swimming pools</h3><ul>{POOL.map((s) => <li key={s.slug}><Link to={`/${s.slug}/`}>{s.title}</Link></li>)}</ul></div>
+            <div><h3>Explore</h3><ul><li><Link to="/about/">About us</Link></li><li><Link to="/services/">Services</Link></li><li><Link to="/projects/">Projects</Link></li><li><Link to="/faq/">FAQ</Link></li><li><Link to="/build-from-abroad/">Build from abroad</Link></li><li><Link to="/contact/">Contact</Link></li></ul></div>
             <div><h3>Other services</h3><ul>{OTHER.map((s) => <li key={s.slug}><Link to={`/${s.slug}/`}>{s.title}</Link></li>)}</ul></div>
-            <div><h3>Company</h3><ul><li><Link to="/build-from-abroad/">Build from abroad</Link></li><li><Link to="/contact/">Contact</Link></li></ul></div>
+            <div>
+              <h3>Contact</h3>
+              <ul>
+                {PHONES.map((p, i) => <li key={p.number}><a href={`tel:+${p.international}`}>{p.number}</a>{i === 0 && <> · <a href={`https://wa.me/${p.international}`}>WhatsApp</a></>}</li>)}
+                <li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
+                <li>{ADDR}, Nigeria.</li>
+              </ul>
+            </div>
           </div>
+        <div className="footer-bottom">
+          <a href="https://skkuglobal.com" target="_blank" rel="noopener noreferrer">Website by SKKU Global Technologies</a>
+          <a className="to-top" href="#main-content">Back to top <span aria-hidden="true">↗</span></a>
+        </div>
         </div>
       </footer>
       <div className="contact-dock"><Link className="btn dock-quote" to="/contact/">Get a free quote<Icon name="arrow" /></Link><a className="wa" href={`https://wa.me/${WA}`}><Icon name="chat" />WhatsApp us</a></div>

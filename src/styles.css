@@ -672,3 +672,9 @@ footer li { list-style: none; }
 
 /* Contact page: no underline on direct-contact links */
 .contact-info a { text-decoration: none !important; border-bottom: 0 !important; background-image: none !important; }
+
+/* Footer bottom bar */
+.footer-bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 32px; margin-top: 44px; padding-top: 28px; border-top: 1px solid #ffffff1f; font-size: 13px; }
+.footer-bottom a { color: #ffffffb3; text-decoration: none; }
+.footer-bottom a:hover, .footer-bottom a:focus-visible { color: #fff; }
+.footer-bottom .to-top { color: var(--home-gold-hover, #d4b27a); font-size: 15px; }
