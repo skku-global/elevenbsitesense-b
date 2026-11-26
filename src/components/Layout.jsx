@@ -84,7 +84,7 @@ export default function Layout() {
               <p>{LEGAL}<br />RC {RC}</p>
             </div>
             <div><h3>Swimming pools</h3><ul>{POOL.map((s) => <li key={s.slug}><Link to={`/${s.slug}/`}>{s.title}</Link></li>)}</ul></div>
-            <div><h3>Explore</h3><ul><li><Link to="/about/">About us</Link></li><li><Link to="/services/">Services</Link></li><li><Link to="/projects/">Projects</Link></li><li><Link to="/faq/">FAQ</Link></li><li><Link to="/build-from-abroad/">Build from abroad</Link></li><li><Link to="/contact/">Contact</Link></li></ul></div>
+            <div><h3>Explore</h3><ul><li><Link to="/services/">Services</Link></li><li><Link to="/projects/">Projects</Link></li><li><Link to="/faq/">FAQ</Link></li><li><Link to="/build-from-abroad/">Build from abroad</Link></li><li><Link to="/contact/">Contact</Link></li></ul></div>
             <div><h3>Other services</h3><ul>{OTHER.map((s) => <li key={s.slug}><Link to={`/${s.slug}/`}>{s.title}</Link></li>)}</ul></div>
             <div>
               <h3>Contact</h3>
