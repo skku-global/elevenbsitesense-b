@@ -61,7 +61,7 @@ export default function Contact() {
         <div className="contact-info">
           <h2>Or reach us directly</h2>
           <ul className="tick">
-            {PHONES.map((p) => <li key={p.number}><a href={`https://wa.me/${p.international}`}>WhatsApp or call {p.number}</a></li>)}
+            {PHONES.map((p, i) => i === 0 ? <li key={p.number}><a href={`https://wa.me/${p.international}`}>WhatsApp or call {p.number}</a></li> : <li key={p.number}><a href={`tel:+${p.international}`}>Call {p.number}</a></li>)}
             <li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
             <li>{ADDR}</li>
           </ul>

@@ -669,3 +669,6 @@ footer li { list-style: none; }
   content: ""; position: absolute; inset: 0;
   background: linear-gradient(180deg, rgba(0,0,0,.45) 0%, rgba(0,0,0,.35) 45%, rgba(0,0,0,.65) 100%);
 }
+
+/* Contact page: no underline on direct-contact links */
+.contact-info a { text-decoration: none !important; border-bottom: 0 !important; background-image: none !important; }
