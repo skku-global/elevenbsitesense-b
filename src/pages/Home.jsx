@@ -129,6 +129,7 @@ export default function Home() {
             <div><p>Browse recent work, or open any service to see photos of that service. Every page below has its own gallery.</p><Link className="home-text-link" to="/contact/">Plan your pool<Icon name="arrow" /></Link></div>
           </div>
           <div id="work" className="home-work-gallery"><Slider d={galleryFor('work')} /></div>
+          <Link className="home-text-link" to="/projects/">View all projects<Icon name="arrow" /></Link>
         </div>
       </section>
 

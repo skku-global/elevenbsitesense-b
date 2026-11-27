@@ -1,10 +1,21 @@
-import { useEffect, useState } from 'react'
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, Outlet, matchPath, useLocation } from 'react-router-dom'
 import { GalleryProvider } from './GalleryModal.jsx'
 import { Icon } from './Visuals.jsx'
-import { BRAND, LEGAL, RC, ADDR, EMAIL, PHONES, WA, POOL, OTHER } from '../data/site.js'
+import { BRAND, LEGAL, RC, ADDR, EMAIL, PHONES, WA, POOL, OTHER, bySlug } from '../data/site.js'
+import { quotePath } from '../data/serviceOptions.js'
 
-const NAV = [['/swimming-pool-construction/', 'Swimming pools'], ['/services/', 'Other services'], ['/build-from-abroad/', 'Build from abroad'], ['/contact/', 'Contact']]
+const NAV = [
+  ['/', 'Home'],
+  ['/swimming-pool-construction/', 'Swimming pools'],
+  ['/services/', 'Other services'],
+  ['/projects/', 'Projects'],
+  ['/build-from-abroad/', 'Build from abroad'],
+  ['/faq/', 'FAQ'],
+  ['/contact/', 'Contact'],
+]
+
+const serviceSections = { pool: '/swimming-pool-construction/', other: '/services/' }
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation()
@@ -51,6 +62,19 @@ export default function Layout() {
   const [scrolled, setScrolled] = useState(false)
   const { pathname } = useLocation()
   const isHome = pathname === '/'
+  const lastViewed = useRef(null)
+  useEffect(() => {
+    if (lastViewed.current === pathname || typeof window.fetch !== 'function') return
+    lastViewed.current = pathname
+    // Count public page navigations. Only the path is included, even on quote links.
+    window.fetch('/api/activity/', {
+      method: 'POST', mode: 'same-origin', credentials: 'omit', referrerPolicy: 'origin',
+      headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: pathname }), keepalive: true,
+    }).catch(() => {})
+  }, [pathname])
+  const slug = pathname.split('/')[1].toLowerCase()
+  const quoteUrl = quotePath(slug)
+  const sectionUrl = serviceSections[bySlug[slug]?.group]
   useEffect(() => { setMenuOpen(false) }, [pathname])
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80)
@@ -69,9 +93,21 @@ export default function Layout() {
           <Link className="logo" to="/"><span className="brand-mark"><Icon name="mark" /></span><span>{BRAND.toUpperCase()}</span></Link>
           <button className="menu-toggle" type="button" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} aria-controls="main-navigation" onClick={() => setMenuOpen((value) => !value)} onKeyDown={(event) => { if (event.key === 'Escape') setMenuOpen(false) }}><Icon name={menuOpen ? 'close' : 'menu'} /></button>
           <nav id="main-navigation" aria-label="Main" className={menuOpen ? 'menu-open' : undefined} onKeyDown={(event) => { if (event.key === 'Escape') { setMenuOpen(false); document.querySelector('.menu-toggle')?.focus() } }}>
-            {NAV.map(([u, t]) => <NavLink key={u} className={u === '/contact/' ? 'home-nav-contact' : undefined} to={u} end>{t}</NavLink>)}
+            {NAV.map(([url, label]) => {
+              const isCurrentPage = Boolean(matchPath(url, pathname))
+              const current = isCurrentPage ? 'page' : url === sectionUrl ? 'location' : undefined
+              return (
+                <Link key={url} className={url === '/contact/' ? 'home-nav-contact' : undefined} to={url} aria-current={current}
+                  onClick={() => {
+                    setMenuOpen(false)
+                    if (isCurrentPage) window.scrollTo(0, 0)
+                  }}>
+                  {label}
+                </Link>
+              )
+            })}
           </nav>
-          {!isHome && <Link className="btn header-quote" to="/contact/">Get a free quote<Icon name="arrow" /></Link>}
+          {!isHome && <Link className="btn header-quote" to={quoteUrl}>Get a free quote<Icon name="arrow" /></Link>}
         </div>
       </header>
       <main id="main-content" className={isHome ? undefined : 'home-shell inner-pages'} tabIndex={-1}><Outlet /></main>
@@ -101,7 +137,7 @@ export default function Layout() {
         </div>
         </div>
       </footer>
-      <div className="contact-dock"><Link className="btn dock-quote" to="/contact/">Get a free quote<Icon name="arrow" /></Link><a className="wa" href={`https://wa.me/${WA}`}><Icon name="chat" />WhatsApp us</a></div>
+      <div className="contact-dock"><Link className="btn dock-quote" to={quoteUrl}>Get a free quote<Icon name="arrow" /></Link><a className="wa" href={`https://wa.me/${WA}`}><Icon name="chat" />WhatsApp us</a></div>
       </div>
     </GalleryProvider>
   )

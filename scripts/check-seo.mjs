@@ -7,9 +7,13 @@ import { content } from '../src/data/content.js'
 import { company } from '../src/data/company.js'
 
 const dist = fileURLToPath(new URL('../dist/', import.meta.url))
-const routes = ['', 'services', 'build-from-abroad', 'contact', ...content.services.map((service) => service.slug)]
+const routes = ['', 'services', 'projects', 'faq', 'build-from-abroad', 'contact', ...content.services.map((service) => service.slug)]
 const htmlFiles = readdirSync(dist, { recursive: true }).filter((file) => file.endsWith('index.html'))
-assert.equal(htmlFiles.length, routes.length, 'Every route must pre-render exactly once')
+assert.equal(htmlFiles.length, routes.length + 1, 'Public pages and owner sign-in must each pre-render once')
+const admin = new JSDOM(readFileSync(join(dist, 'admin', 'index.html'), 'utf8'))
+assert.match(admin.window.document.querySelector('meta[name="robots"]')?.content || '', /noindex/i)
+admin.window.close()
+assert.ok(!readFileSync(join(dist, 'sitemap.xml'), 'utf8').includes('/admin/'), 'Keep the owner page out of the public sitemap')
 const titles = new Set()
 
 for (const route of routes) {

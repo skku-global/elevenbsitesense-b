@@ -26,6 +26,7 @@ if encoded then
   if sent and record.acknowledgement ~= 'pending' then return cjson.encode({code='completed'}) end
   if record.owner and record.lockUntil > now then
     if sent then return cjson.encode({code='completed'}) end
+    if record.inboxReceived then return cjson.encode({code='inbox_received'}) end
     return cjson.encode({code='enquiry_in_progress', retryAfter=math.max(1, math.ceil((record.lockUntil-now)/1000))})
   end
   if now-record.createdAt >= tonumber(ARGV[6]) then
@@ -35,6 +36,7 @@ if encoded then
       redis.call('SET', KEYS[1], cjson.encode(record))
       return cjson.encode({code='completed', acknowledgementExpired=true})
     end
+    if record.inboxReceived then return cjson.encode({code='inbox_received'}) end
     return cjson.encode({code='retry_expired'})
   end
 else
@@ -56,6 +58,7 @@ if not encoded then return cjson.encode({updated=false}) end
 local record = cjson.decode(encoded)
 if record.owner ~= ARGV[1] then return cjson.encode({updated=false}) end
 local patch = cjson.decode(ARGV[2])
+if patch.inboxReceived then record.inboxReceived = true end
 if patch.notification then record.notification = patch.notification end
 if patch.acknowledgement then record.acknowledgement = patch.acknowledgement end
 if patch.release then record.owner = nil; record.lockUntil = nil end
@@ -75,13 +78,13 @@ export class ContactStoreError extends Error {
   }
 }
 
-export function createContactStore({ url, token, fetchImpl = fetch, timeoutMs = 2000 }) {
+export function createContactStore({ url, token, variables = { url: 'UPSTASH_REDIS_REST_URL', token: 'UPSTASH_REDIS_REST_TOKEN' }, fetchImpl = fetch, timeoutMs = 2000 }) {
   let endpoint
   try {
     endpoint = new URL(url)
     if (endpoint.protocol !== 'https:' || !endpoint.hostname.endsWith('.upstash.io') || endpoint.username || endpoint.password || endpoint.search || endpoint.hash || endpoint.pathname !== '/') throw new Error('Invalid endpoint')
-  } catch { throw new ContactStoreError('invalid_storage_endpoint', { variables: ['UPSTASH_REDIS_REST_URL'] }) }
-  if (typeof token !== 'string' || !token.trim()) throw new ContactStoreError('missing_environment_variables', { variables: ['UPSTASH_REDIS_REST_TOKEN'] })
+  } catch { throw new ContactStoreError('invalid_storage_endpoint', { variables: [variables.url] }) }
+  if (typeof token !== 'string' || !token.trim()) throw new ContactStoreError('missing_environment_variables', { variables: [variables.token] })
 
   const receiptKey = (id) => `${namespace}:receipt:${id}`
   const execute = async (command) => {
@@ -93,7 +96,7 @@ export function createContactStore({ url, token, fetchImpl = fetch, timeoutMs = 
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(command), signal: controller.signal,
       })
-      if (!response.ok) throw new ContactStoreError('storage_http_error', { status: response.status, ...([401, 403].includes(response.status) ? { variables: ['UPSTASH_REDIS_REST_TOKEN'] } : {}) })
+      if (!response.ok) throw new ContactStoreError('storage_http_error', { status: response.status, ...([401, 403].includes(response.status) ? { variables: [variables.token] } : {}) })
       const body = await response.json()
       if (body.error) throw new ContactStoreError('storage_command_rejected', { providerMessage: redactDiagnosticMessage(body.error, [url, token]) })
       if (typeof body.result !== 'string') throw new ContactStoreError()
@@ -112,7 +115,7 @@ export function createContactStore({ url, token, fetchImpl = fetch, timeoutMs = 
         fingerprint, String(now), owner, String(autoreply), String(lockDurationMs), String(retryWindowMs),
         '30', '5', '300', '100', String(rateWindowSeconds),
       ])
-      if (!result || !['ready', 'completed', 'rate_limited', 'idempotency_conflict', 'enquiry_in_progress', 'retry_expired'].includes(result.code)) throw new ContactStoreError()
+      if (!result || !['ready', 'completed', 'inbox_received', 'rate_limited', 'idempotency_conflict', 'enquiry_in_progress', 'retry_expired'].includes(result.code)) throw new ContactStoreError()
       if (result.code === 'ready' && (!result.record || result.record.fingerprint !== fingerprint || result.record.owner !== owner || !Number.isFinite(result.record.createdAt) || !['pending', 'sent'].includes(result.record.notification) || !['pending', 'sent', 'failed', 'disabled'].includes(result.record.acknowledgement))) throw new ContactStoreError()
       if (['rate_limited', 'enquiry_in_progress'].includes(result.code) && (!Number.isInteger(result.retryAfter) || result.retryAfter < 1)) throw new ContactStoreError()
       return result

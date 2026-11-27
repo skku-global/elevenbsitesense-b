@@ -24,7 +24,7 @@ export default function Service({ slug }) {
   return (
     <>
       <Seo path={path} title={`${s.h1} | ${BRAND}`} desc={s.meta} ld={ld} />
-      <Hero h1={s.h1} p={s.intro} crumbs={crumbs} slug={slug} imagePhoto={heroDesign}
+      <Hero h1={s.h1} p={s.intro} crumbs={crumbs} slug={slug} quoteService={slug} imagePhoto={heroDesign}
         side={<aside className="plate"><Drawing active={s.part} name={s.title} />
           <div className="cap"><span className="cn"><b>{s.title}</b></span><span className="cl">Highlighted in the building</span></div></aside>} />
       <section><div className="w cols">
@@ -40,7 +40,7 @@ export default function Service({ slug }) {
       {slug === 'pool-renovation-and-repair' && <BeforeAfter />}
       <Section><h2>Common questions</h2><Faq faqs={s.faqs} /></Section>
       <Section alt><h2>Related services</h2><div className="grid service-grid">{s.related.map((r) => <ServiceCard key={r} slug={r} />)}</div></Section>
-      <Cta />
+      <Cta quoteService={slug} />
     </>
   )
 }

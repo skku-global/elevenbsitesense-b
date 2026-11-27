@@ -1,12 +1,18 @@
 // Server-only diagnostics. Never serialize an environment object or raw Error.
+const redisVariablePairs = [
+  { url: 'UPSTASH_REDIS_REST_URL', token: 'UPSTASH_REDIS_REST_TOKEN' },
+  { url: 'KV_REST_API_URL', token: 'KV_REST_API_TOKEN' },
+]
 const environmentNames = new Set([
   'RESEND_API_KEY', 'CONTACT_FROM', 'CONTACT_TO', 'AUTOREPLY',
-  'UPSTASH_REDIS_REST_URL', 'UPSTASH_REDIS_REST_TOKEN', 'CONTACT_ALLOWED_ORIGINS', 'ALLOWED_ORIGINS',
-  'VERCEL_URL', 'VERCEL_BRANCH_URL',
+  ...redisVariablePairs.flatMap(pair => [pair.url, pair.token]), 'CONTACT_ALLOWED_ORIGINS', 'ALLOWED_ORIGINS',
+  'VERCEL_URL', 'VERCEL_BRANCH_URL', 'VERCEL_PROJECT_PRODUCTION_URL',
+  'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'SUPABASE_PUBLISHABLE_KEY',
 ])
 const configurationReasons = new Set([
   'missing_environment_variables', 'invalid_origin_configuration', 'invalid_preview_origin_configuration',
   'invalid_sender_format', 'sender_domain_not_allowed', 'invalid_destination_address',
+  'invalid_journal_configuration', 'journal_write_failed',
 ])
 const diagnosticCodes = new Set([
   'provider_rejected', 'invalid_provider_response', 'provider_timeout', 'provider_unavailable',
@@ -23,7 +29,18 @@ export class ContactConfigurationError extends Error {
   }
 }
 
-export const missingContactVariables = (env) => ['RESEND_API_KEY', 'UPSTASH_REDIS_REST_URL', 'UPSTASH_REDIS_REST_TOKEN'].filter((name) => typeof env?.[name] !== 'string' || !env[name].trim())
+const hasValue = (env, name) => typeof env?.[name] === 'string' && Boolean(env[name].trim())
+
+export function contactRedisVariables(env) {
+  // Keep each token paired with its own endpoint, including during a migration.
+  return redisVariablePairs.find(pair => hasValue(env, pair.url) && hasValue(env, pair.token))
+    ?? redisVariablePairs.find(pair => hasValue(env, pair.url) || hasValue(env, pair.token))
+    ?? redisVariablePairs[0]
+}
+
+export function missingContactVariables(env, redis = contactRedisVariables(env)) {
+  return ['RESEND_API_KEY', redis.url, redis.token].filter(name => !hasValue(env, name))
+}
 export const contactDiagnosticRedactions = (env) => [...environmentNames].map((name) => env?.[name]).filter((value) => typeof value === 'string' && value.length)
 
 export function redactDiagnosticMessage(message, redactions = []) {
@@ -50,7 +67,7 @@ export function diagnosticDetails(error, redactions = []) {
   return {
     ...(configurationReasons.has(error.reason) ? { reason: error.reason } : {}),
     ...(diagnosticCodes.has(error.code) ? { code: error.code } : {}),
-    ...(['resend', 'upstash'].includes(error.provider) ? { provider: error.provider } : {}),
+    ...(['resend', 'upstash', 'supabase'].includes(error.provider) ? { provider: error.provider } : {}),
     ...(Number.isInteger(error.status) ? { status: error.status } : {}),
     ...(Array.isArray(error.variables) && error.variables.length ? { variables: error.variables.filter((name) => environmentNames.has(name)) } : {}),
     ...(error.providerMessage ? { message: redactDiagnosticMessage(error.providerMessage, redactions) } : {}),

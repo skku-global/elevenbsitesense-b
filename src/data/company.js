@@ -53,7 +53,7 @@ export const company = {
   serviceCities: ['Lagos', 'Ibadan', 'Abuja'],
   socialLinks: [TIKTOK_PROFILE],
   websiteUrl: 'https://elevenbsitesense.com',
-  contactFormEndpoint: '/api/contact', // Vercel function (api/contact.js) that emails enquiries via Resend.
+  contactFormEndpoint: '/api/contact/', // Matches Vercel's canonical trailing-slash URL.
 }
 
 export function getPhoneUrl(contact) {

@@ -12,19 +12,21 @@ npm run build     # writes the pre-rendered site to dist/
 ## Where things live
 - `src/data/content.js` – service copy, FAQs, steps (edit text here)
 - `src/data/company.js` – phones, email, address, RC number
-- `src/pages/` – Home, Service, Services, Abroad, Contact
+- `src/pages/` – Home, Service, Services, Projects, FAQ, Abroad and Contact
 - `src/components/` – Drawing (SVG), Slider, GalleryModal, Layout
 - `src/styles.css` – all styling
-- `api/contact.js` + `server/` – contact form backend (unchanged)
+- `api/contact.js` and `server/` – contact form, Resend email and optional Supabase enquiry storage
+- `src/admin/` – the owner's private enquiry inbox and traffic overview at `/admin/`. [Supabase setup](docs/owner-dashboard.md)
 
-## Photos
-Put files in `src/assets/images/<service-slug>/1.jpg, 2.jpg…` (for example `src/assets/images/tiling/1.jpg`) and `src/assets/images/work/1.jpg…` for the home slider. Rebuild; they appear automatically in place of the grey placeholders.
+## Project media
+The project photo cards on `/projects/` use `src/data/projectPhotos.js` and images in `src/assets/images/projects/`. The original service galleries use their service image manifests. The nine local project videos and their matching poster images are in `public/media/projects/`.
+
+Run `npm run build:site` to regenerate the pages and `npm run preview` to open the build locally. Both `npm run dev` and `npm run preview` serve the contact API. Set the three server credentials in `.env.local` to send real emails from your local copy.
 
 ## Put it online
-1. Push this repo to GitHub.
-2. Vercel: Add New > Project > import the repo. `vercel.json` sets the build (`npm run build`, output `dist`).
-3. Settings > Environment Variables: `RESEND_API_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `CONTACT_FROM`, `CONTACT_TO`, `AUTOREPLY` (see `.env.example`, `docs/contact-email.md`).
-4. Add the project's URL to `ALLOWED_ORIGINS`, then redeploy. Without this the form is refused.
-5. Domain: add `elevenbsitesense.com` and `www.elevenbsitesense.com` in Vercel. Change only the A / CNAME records; leave MX, SPF, DKIM and DMARC alone so Zoho and Resend keep working.
+1. In Resend, confirm that `elevenbsitesense.com` shows **Verified** and obtain a sending API key for that domain.
+2. Open **elevenbsitesense-b → Settings → Environment Variables** in Vercel. The connected Upstash database supplies `KV_REST_API_URL` and the writable `KV_REST_API_TOKEN`. Set `RESEND_API_KEY` in Production and set `AUTOREPLY=true` if you want a confirmation sent to the customer.
+3. Deploy the updated project root, including `api/` and `server/`, to this Vercel project. `vercel.json` sets the build command and output directory. The origin `https://elevenbsitesense-b.vercel.app` is already allowed.
+4. Submit a quote from the deployed contact page using an inbox you control. Check the notification at `info@elevenbsitesense.com` and the acknowledgement in the submitting inbox. [Detailed contact email settings](docs/contact-email.md)
 
 New pages: add the service to `src/data/content.js` (it gets its own route automatically). Update `public/sitemap.xml` when you add one.

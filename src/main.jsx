@@ -7,11 +7,13 @@ import Abroad from './pages/Abroad.jsx'
 import Contact from './pages/Contact.jsx'
 import FAQ from './pages/FAQ.jsx'
 import Projects from './pages/Projects.jsx'
+import AdminPage from './admin/AdminPage.jsx'
 import { services } from './data/site.js'
 import './styles.css'
 
 // One real, pre-rendered page per route.
 export const routes = [
+  { path: '/admin', element: <AdminPage /> },
   {
     path: '/',
     element: <Layout />,

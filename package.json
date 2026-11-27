@@ -4,11 +4,12 @@
   "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --configLoader runner",
     "build": "node scripts/build.mjs",
-    "preview": "vite preview",
+    "build:site": "npm run build",
+    "preview": "vite preview --configLoader runner",
     "lint": "node scripts/lint.mjs",
-    "test": "node --test src/components/galleryModel.test.js src/components/galleryAssets.test.js",
+    "test": "node --test src/components/galleryModel.test.js src/components/galleryAssets.test.js scripts/contact-journal.test.mjs scripts/admin-api.test.mjs",
     "check:seo": "node scripts/check-seo.mjs"
   },
   "dependencies": {

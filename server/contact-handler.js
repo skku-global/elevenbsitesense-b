@@ -3,31 +3,29 @@ import { isIP } from 'node:net'
 import { ipAddress } from '@vercel/functions'
 import { normalizeEnquiry, validateEnquiry, getEnquiryServiceTitle, isSubmissionId, isEmail } from '../src/data/enquiry.js'
 import { createContactStore } from './contact-store.js'
+import { createEnquiryJournal } from './admin-supabase.js'
 import { createMailSender, notificationEmail, acknowledgementEmail, defaultContactFrom, defaultContactTo } from './contact-mail.js'
-import { ContactConfigurationError, missingContactVariables, contactDiagnosticRedactions, diagnosticDetails } from './contact-diagnostics.js'
+import { ContactConfigurationError, contactRedisVariables, missingContactVariables, contactDiagnosticRedactions, diagnosticDetails } from './contact-diagnostics.js'
 
-const productionOrigins = ['https://elevenbsitesense.com', 'https://www.elevenbsitesense.com', 'https://elevenbsitesense.vercel.app']
-const projectPreviewPattern = 'https://elevenbsitesense11-*-adewalepolicy75-uxs-projects.vercel.app'
-const projectPreviewOrigin = /^https:\/\/elevenbsitesense11-[a-z0-9]+(?:-[a-z0-9]+)*-adewalepolicy75-uxs-projects\.vercel\.app$/
-const gitMainOrigin = 'https://elevenbsitesense11-git-main-adewalepolicy75-uxs-projects.vercel.app'
+const productionOrigins = [
+  'https://elevenbsitesense-b.vercel.app',
+  'https://elevenbsitesense.com',
+  'https://www.elevenbsitesense.com',
+  'https://elevenbsitesense.vercel.app',
+]
 const payloadLimit = 16 * 1024
 const allowedFields = new Set(['name', 'email', 'phone', 'service', 'message', 'company_website', 'serviceTitle', 'source'])
 const header = (req, name) => typeof req.headers?.[name] === 'string' ? req.headers[name] : ''
 
-export function allowedOrigins(env) {
+export function allowedOrigins(env, localSocket) {
   const result = new Set(productionOrigins)
   const settings = [
-    ['ALLOWED_ORIGINS', env.ALLOWED_ORIGINS || `${projectPreviewPattern},${gitMainOrigin}`],
+    ['ALLOWED_ORIGINS', env.ALLOWED_ORIGINS || ''],
     ['CONTACT_ALLOWED_ORIGINS', env.CONTACT_ALLOWED_ORIGINS || ''],
   ]
   for (const [name, list] of settings) {
     if (typeof list !== 'string') throw new ContactConfigurationError('invalid_origin_configuration', [name])
     for (const value of list.split(',').map((origin) => origin.trim()).filter(Boolean)) {
-      // Only this project's approved pattern is supported, and only in Preview.
-      if (name === 'ALLOWED_ORIGINS' && value === projectPreviewPattern) {
-        if (env.VERCEL_ENV === 'preview') result.add(value)
-        continue
-      }
       try {
         const url = new URL(value)
         if (value.includes('*') || url.protocol !== 'https:' || url.origin !== value) throw new Error('Invalid origin configuration')
@@ -36,12 +34,10 @@ export function allowedOrigins(env) {
     }
   }
   if (env.VERCEL_ENV === 'preview' || env.VERCEL_ENV === 'production') {
-    for (const name of ['VERCEL_URL', 'VERCEL_BRANCH_URL']) {
+    for (const name of ['VERCEL_URL', 'VERCEL_BRANCH_URL', 'VERCEL_PROJECT_PRODUCTION_URL']) {
       if (!env[name]) continue
       const value = `https://${env[name]}`
-      // A git-main or deployment URL can serve a Production build. Add only
-      // that build's exact, project-scoped runtime URL; never a production glob.
-      if (env.VERCEL_ENV === 'production' && !projectPreviewOrigin.test(value)) continue
+      // Vercel supplies the exact hostnames for this deployment.
       try {
         const url = new URL(value)
         if (url.hostname.endsWith('.vercel.app') && url.origin === value) result.add(url.origin)
@@ -49,18 +45,25 @@ export function allowedOrigins(env) {
     }
   }
   if (env.VERCEL_ENV === 'development' || (!env.VERCEL_ENV && env.NODE_ENV === 'development')) {
-    for (const host of ['localhost', '127.0.0.1']) for (const port of [3000, 5173, 4173, 4183]) result.add(`http://${host}:${port}`)
+    const hosts = ['localhost', '127.0.0.1', '[::1]']
+    for (const host of hosts) for (const port of [3000, 5173, 4173, 4183, 55380]) result.add(`http://${host}:${port}`)
+    // Vite can choose a free port when its default is occupied. Use the socket’s
+    // actual listener port, never a Host or forwarded header supplied by a client.
+    if (Number.isInteger(localSocket?.localPort)) {
+      const scheme = localSocket.encrypted ? 'https' : 'http'
+      for (const host of hosts) result.add(new URL(`${scheme}://${host}:${localSocket.localPort}`).origin)
+    }
   }
   return result
 }
 
-export function isAllowedOrigin(env, origin) {
-  const origins = allowedOrigins(env)
+export function isAllowedOrigin(env, origin, localSocket) {
+  const origins = allowedOrigins(env, localSocket)
   if (typeof origin !== 'string' || origin.includes('*')) return false
   try {
     // Require a canonical origin, without credentials, paths, whitespace, or ports hidden by URL normalization.
     const url = new URL(origin)
-    return url.origin === origin && (origins.has(origin) || (origins.has(projectPreviewPattern) && projectPreviewOrigin.test(origin)))
+    return url.origin === origin && origins.has(origin)
   } catch { return false }
 }
 
@@ -74,6 +77,17 @@ const fingerprint = (values) => createHash('sha256').update(JSON.stringify(value
 const acceptance = (res, id) => res.status(200).json({ ok: true, status: 'accepted', enquiryId: id })
 const rejection = (res, status, code, extra = {}) => res.status(status).json({ ok: false, code, ...extra })
 
+function configureMail(env, fetchImpl, redactions) {
+  if (!env.RESEND_API_KEY?.trim()) throw new ContactConfigurationError('missing_environment_variables', ['RESEND_API_KEY'])
+  const from = env.CONTACT_FROM || defaultContactFrom
+  const to = env.CONTACT_TO || defaultContactTo
+  const fromEmail = from.match(/<([^<>]+)>$/)?.[1]
+  if (/[\r\n]/.test(from) || !isEmail(fromEmail)) throw new ContactConfigurationError('invalid_sender_format', ['CONTACT_FROM'])
+  if (!fromEmail.endsWith('@elevenbsitesense.com')) throw new ContactConfigurationError('sender_domain_not_allowed', ['CONTACT_FROM'])
+  if (!isEmail(to)) throw new ContactConfigurationError('invalid_destination_address', ['CONTACT_TO'])
+  return { from, to, send: createMailSender({ key: env.RESEND_API_KEY, fetchImpl, redactions }) }
+}
+
 export function createContactHandler({ getEnv = () => process.env, fetchImpl = fetch, schedule, logger = console, now = Date.now } = {}) {
   return async function handler(req, res) {
     res.setHeader('Cache-Control', 'no-store')
@@ -82,7 +96,14 @@ export function createContactHandler({ getEnv = () => process.env, fetchImpl = f
     let env
     try {
       env = getEnv()
-      if (!isAllowedOrigin(env, header(req, 'origin'))) return rejection(res, 403, 'origin_not_allowed')
+      const origin = header(req, 'origin')
+      if (!isAllowedOrigin(env, origin, req.socket)) {
+        const requestId = header(req, 'idempotency-key').toLowerCase()
+        const reference = isSubmissionId(requestId) ? { requestId } : {}
+        const reason = !origin ? 'missing_origin' : origin === 'null' ? 'opaque_origin' : 'unlisted_origin'
+        logger.warn?.('contact_origin_rejected', { reason, ...reference })
+        return rejection(res, 403, 'origin_not_allowed', reference)
+      }
     } catch (error) {
       logger.error('contact_configuration_error', error instanceof ContactConfigurationError ? diagnosticDetails(error) : { reason: 'environment_access_failed' })
       return rejection(res, 503, 'service_unavailable')
@@ -107,33 +128,40 @@ export function createContactHandler({ getEnv = () => process.env, fetchImpl = f
     if (Object.keys(fieldErrors).length) return rejection(res, 400, 'validation_error', { fieldErrors })
 
     const values = normalizeEnquiry(body)
+    const redisVariables = contactRedisVariables(env)
+    const redisToken = env[redisVariables.token]
     const redactions = [...contactDiagnosticRedactions(env), ...Object.values(values), defaultContactFrom, defaultContactTo]
-    let store, send, from, to
+    const reference = { requestId: id }
+    const safeLog = (event, error) => logger.error(event, { enquiryId: id, ...diagnosticDetails(error, redactions) })
+    let store, journal, mail, mailConfigurationError
     try {
-      const missing = missingContactVariables(env)
+      journal = createEnquiryJournal(env, fetchImpl)
+      // With an owner inbox, preserve validated enquiries even if email is misconfigured.
+      const missing = missingContactVariables(env, redisVariables).filter(name => !journal || name !== 'RESEND_API_KEY')
       if (missing.length) throw new ContactConfigurationError('missing_environment_variables', missing)
-      from = env.CONTACT_FROM || defaultContactFrom
-      to = env.CONTACT_TO || defaultContactTo
-      const fromEmail = from.match(/<([^<>]+)>$/)?.[1]
-      if (/[\r\n]/.test(from) || !isEmail(fromEmail)) throw new ContactConfigurationError('invalid_sender_format', ['CONTACT_FROM'])
-      if (!fromEmail.endsWith('@elevenbsitesense.com')) throw new ContactConfigurationError('sender_domain_not_allowed', ['CONTACT_FROM'])
-      if (!isEmail(to)) throw new ContactConfigurationError('invalid_destination_address', ['CONTACT_TO'])
-      store = createContactStore({ url: env.UPSTASH_REDIS_REST_URL, token: env.UPSTASH_REDIS_REST_TOKEN, fetchImpl })
-      send = createMailSender({ key: env.RESEND_API_KEY, fetchImpl, redactions })
+      store = createContactStore({ url: env[redisVariables.url], token: redisToken, variables: redisVariables, fetchImpl })
+      try { mail = configureMail(env, fetchImpl, redactions) }
+      catch (error) { if (!journal) throw error; mailConfigurationError = error }
     } catch (error) {
-      logger.error('contact_configuration_error', { enquiryId: id, ...diagnosticDetails(error, redactions) })
-      return rejection(res, 503, 'service_unavailable')
+      safeLog('contact_configuration_error', error)
+      return rejection(res, 503, 'service_unavailable', reference)
     }
 
     const serviceTitle = getEnquiryServiceTitle(values.service)
     const owner = randomUUID()
-    const safeLog = (event, error) => logger.error(event, { enquiryId: id, ...diagnosticDetails(error, redactions) })
+    const markDelivery = async (status) => {
+      try { await journal?.markDelivery(id, status) }
+      catch (error) { safeLog('contact_journal_status_failed', error) }
+    }
     let reservation
     try {
-      reservation = await store.reserve({ id, owner, fingerprint: fingerprint(values), now: now(), autoreply: env.AUTOREPLY === 'true', ipHash: createHmac('sha256', env.UPSTASH_REDIS_REST_TOKEN).update(clientAddress(req, env)).digest('hex') })
-    } catch (error) { safeLog('contact_storage_unavailable', error); return rejection(res, 503, 'service_unavailable') }
+      reservation = await store.reserve({ id, owner, fingerprint: fingerprint(values), now: now(), autoreply: env.AUTOREPLY === 'true', ipHash: createHmac('sha256', redisToken).update(clientAddress(req, env)).digest('hex') })
+    } catch (error) { safeLog('contact_storage_unavailable', error); return rejection(res, 503, 'service_unavailable', reference) }
+    if (reservation.code === 'inbox_received') return acceptance(res, id)
     if (reservation.code === 'completed') {
       if (reservation.acknowledgementExpired) safeLog('contact_acknowledgement_retry_expired')
+      // A replay can repair a dashboard update interrupted after the email was accepted.
+      await markDelivery('sent')
       return acceptance(res, id)
     }
     if (reservation.code !== 'ready') {
@@ -146,20 +174,35 @@ export function createContactHandler({ getEnv = () => process.env, fetchImpl = f
       catch (error) { safeLog('contact_receipt_update_failed', error); return false }
     }
     const record = reservation.record
+    try { await journal?.record(id, values) }
+    catch (error) {
+      safeLog('contact_journal_write_failed', error)
+      await update({ release: true })
+      return record.notification === 'sent' || record.inboxReceived ? acceptance(res, id) : rejection(res, 503, 'service_unavailable', reference)
+    }
+    if (mailConfigurationError) {
+      safeLog('contact_configuration_error', mailConfigurationError)
+      const sent = record.notification === 'sent'
+      await Promise.all([markDelivery(sent ? 'sent' : 'failed'), update({ inboxReceived: true, release: true })])
+      // The enquiry has already reached the owner's durable inbox.
+      return acceptance(res, id)
+    }
+    const { from, to, send } = mail
     if (record.notification !== 'sent') {
       try {
         await send({ from, to: [to], reply_to: values.email, ...notificationEmail(values, serviceTitle, id) }, `contact/${id}/notification`)
       } catch (error) {
         safeLog('contact_notification_failed', error)
-        await update({ release: true })
-        return rejection(res, 502, 'notification_unavailable')
+        await Promise.all([markDelivery('failed'), update({ inboxReceived: Boolean(journal), release: true })])
+        return journal || record.inboxReceived ? acceptance(res, id) : rejection(res, 502, 'notification_unavailable', reference)
       }
-      if (!await update({ notification: 'sent' })) {
+      const [receiptUpdated] = await Promise.all([update({ notification: 'sent' }), markDelivery('sent')])
+      if (!receiptUpdated) {
         // Resend has accepted the required message. Skip optional work when its
         // receipt cannot be committed; the provider key protects recovery retries.
         return acceptance(res, id)
       }
-    }
+    } else await markDelivery('sent')
 
     if (record.acknowledgement === 'pending' && env.AUTOREPLY === 'true') {
       const acknowledgement = (async () => {

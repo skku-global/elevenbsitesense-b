@@ -3,6 +3,7 @@ import { Head } from 'vite-react-ssg'
 import { useGallery } from './GalleryModal.jsx'
 import { Icon, ProjectImage, WaterWave } from './Visuals.jsx'
 import { SITE, BRAND, WA, bySlug, firstSentence, steps } from '../data/site.js'
+import { quotePath } from '../data/serviceOptions.js'
 
 export function Seo({ path, title, desc, ld = [] }) {
   const url = SITE + path
@@ -21,7 +22,7 @@ export function Seo({ path, title, desc, ld = [] }) {
   )
 }
 
-export function Hero({ h1, p, crumbs = [], buttons = true, side = null, slug = 'swimming-pool-construction', home = false, imagePhoto }) {
+export function Hero({ h1, p, crumbs = [], buttons = true, side = null, slug = 'swimming-pool-construction', home = false, imagePhoto, quoteService }) {
   return (
     <div className={`hero${side ? ' two' : ''}${home ? ' hero-home' : ''}`}>
       <ProjectImage src={imagePhoto?.src} alt={imagePhoto?.alt} width={imagePhoto?.width} height={imagePhoto?.height} slug={slug} fallbackSlug={home ? 'work' : 'hero'} decorative={!imagePhoto} eager className="hero-image" />
@@ -35,7 +36,7 @@ export function Hero({ h1, p, crumbs = [], buttons = true, side = null, slug = '
           <p>{p}</p>
           {buttons && (
             <div className="row">
-              <Link className="btn" to="/contact/">Get a free quote<Icon name="arrow" /></Link>
+              <Link className="btn" to={quotePath(quoteService)}>Get a free quote<Icon name="arrow" /></Link>
               <Link className="btn o" to="/build-from-abroad/">Building from abroad?</Link>
             </div>
           )}
@@ -92,13 +93,13 @@ export const Steps = () => (
   <ol className="steps">{steps.map((s) => <li key={s.title}><b>{s.title}</b><span>{s.text}</span></li>)}</ol>
 )
 
-export const Cta = ({ heading = 'Tell us what you want to build' }) => (
+export const Cta = ({ heading = 'Tell us what you want to build', quoteService }) => (
   <section className="cta">
     <div className="w">
       <h2>{heading}</h2>
       <p>Send your plot size, location and ideas. You get a reply within one working day, in your time zone.</p>
       <div className="row">
-        <Link className="btn" to="/contact/">Get a free quote<Icon name="arrow" /></Link>
+        <Link className="btn" to={quotePath(quoteService)}>Get a free quote<Icon name="arrow" /></Link>
         <a className="btn o" href={`https://wa.me/${WA}`}>Chat on WhatsApp</a>
       </div>
     </div>

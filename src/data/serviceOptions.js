@@ -2,6 +2,9 @@
 export const serviceOptions = Object.freeze([
   { slug: 'general-building-contracting', title: 'General Building Contracting', shortTitle: 'Building construction', category: 'Construction' },
   { slug: 'swimming-pool-construction', title: 'Swimming Pool Construction', shortTitle: 'Swimming pools', category: 'Outdoor living' },
+  { slug: 'residential-swimming-pools', title: 'Residential Swimming Pools', shortTitle: 'Residential pools', category: 'Outdoor living' },
+  { slug: 'commercial-swimming-pools', title: 'Commercial Swimming Pools', shortTitle: 'Commercial pools', category: 'Outdoor living' },
+  { slug: 'pool-renovation-and-repair', title: 'Pool Renovation and Repair', shortTitle: 'Pool repairs', category: 'Outdoor living' },
   { slug: 'pop-ceiling-installation', title: 'P.O.P. Ceiling Installation', shortTitle: 'P.O.P. ceilings', category: 'Interior finishing' },
   { slug: 'artwork-and-interior-design', title: 'Artwork and Interior Design', shortTitle: 'Interiors & artwork', category: 'Interior design' },
   { slug: 'tiling', title: 'Tiling', shortTitle: 'Precision tiling', category: 'Interior finishing' },
@@ -11,3 +14,4 @@ export const serviceOptions = Object.freeze([
 ].map((option) => Object.freeze(option)))
 
 export const getServiceOption = (slug) => serviceOptions.find((option) => option.slug === slug)
+export const quotePath = (slug) => getServiceOption(slug) ? `/contact/?service=${encodeURIComponent(slug)}` : '/contact/'

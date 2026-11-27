@@ -34,12 +34,14 @@ export function createSubmissionId() {
 }
 
 const submissionMessages = {
+  origin_not_allowed: 'This website address is not enabled for online enquiries. Please use the phone, WhatsApp or email links below.',
   validation_error: 'Please check the highlighted fields so we can send your enquiry.',
   rate_limited: 'You’ve made several requests recently. Please wait a little before trying again, or contact us directly.',
   enquiry_in_progress: 'Your enquiry is being processed. Please wait a moment before trying again.',
   retry_expired: 'We couldn’t confirm the status of this earlier enquiry. Please contact us directly before submitting it again.',
 }
 const submissionFailure = 'We couldn’t send your enquiry. Your details are still here. Please try again or contact us directly.'
+const accessDenied = 'Access to the enquiry service was denied (403). Your details are still here. Please use the phone, WhatsApp or email links below.'
 
 // Require the API's explicit acceptance, including this enquiry's reference.
 export async function readEnquiryResponse(response, submissionId) {
@@ -48,12 +50,16 @@ export async function readEnquiryResponse(response, submissionId) {
     if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('Unexpected response')
     body = await response.json()
   } catch {
-    const error = new Error(submissionFailure)
+    const error = new Error(response.status === 403 ? accessDenied : submissionFailure)
     error.userFacing = true
     throw error
   }
   if (response.ok && body?.ok === true && body.status === 'accepted' && body.enquiryId === submissionId) return body
-  const error = new Error(submissionMessages[body?.code] || submissionFailure)
+  let message = submissionMessages[body?.code] || (response.status === 403 ? accessDenied : submissionFailure)
+  if (['origin_not_allowed', 'service_unavailable', 'notification_unavailable'].includes(body?.code) && body.requestId === submissionId && isSubmissionId(submissionId)) {
+    message += ` Reference ${submissionId}.`
+  }
+  const error = new Error(message)
   error.userFacing = true
   if (body?.code === 'validation_error' && body.fieldErrors && typeof body.fieldErrors === 'object') {
     error.fieldErrors = Object.fromEntries(Object.entries(body.fieldErrors).filter(([field, message]) => ['name', 'email', 'phone', 'service', 'message'].includes(field) && typeof message === 'string' && message.length <= 200))

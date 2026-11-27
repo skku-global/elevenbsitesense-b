@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import { Link } from 'react-router-dom'
 import Slider from './Slider.jsx'
 import { galleryFor } from './GalleryData.js'
+import { quotePath } from '../data/serviceOptions.js'
 
 const Ctx = createContext(() => {})
 export const useGallery = () => useContext(Ctx)
@@ -22,7 +23,7 @@ export function GalleryProvider({ children }) {
     setSlug(k)
     setInitialIndex(index)
     setMounted(true)
-    requestAnimationFrame(() => requestAnimationFrame(() => { setOpen(true); setTimeout(() => panel.current?.focus(), 150) }))
+    requestAnimationFrame(() => requestAnimationFrame(() => setOpen(true)))
   }, [])
 
   const close = useCallback(() => {
@@ -35,12 +36,13 @@ export function GalleryProvider({ children }) {
 
   useEffect(() => {
     document.documentElement.style.overflow = mounted ? 'hidden' : ''
-    if (!mounted) last.current?.focus?.({ preventScroll: true })
+    if (mounted) panel.current?.querySelector('.gm-x')?.focus({ preventScroll: true })
+    else last.current?.focus?.({ preventScroll: true })
     return () => { document.documentElement.style.overflow = '' }
   }, [mounted])
 
   useEffect(() => {
-    if (!open) return
+    if (!mounted) return
     const onKey = (e) => {
       if (e.defaultPrevented) return
       if (e.key === 'Escape') close()
@@ -55,7 +57,7 @@ export function GalleryProvider({ children }) {
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [open, close])
+  }, [mounted, close])
 
   const d = slug ? galleryFor(slug) : null
   return (
@@ -75,7 +77,7 @@ export function GalleryProvider({ children }) {
                 <p className="gm-l">{d.d}</p>
                 <ul className="tick">{d.i.map((x) => <li key={x}>{x}</li>)}</ul>
                 <div className="row">
-                  <Link className="btn" to="/contact/" onClick={close}>Enquire about this service</Link>
+                  <Link className="btn" to={quotePath(slug)} onClick={close}>Enquire about this service</Link>
                   <Link className="btn o" to={d.u} onClick={close}>Full service page</Link>
                 </div>
               </div>
