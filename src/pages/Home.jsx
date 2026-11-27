@@ -65,6 +65,10 @@ export default function Home() {
         ld={[org]} />
 
       <section className="home-hero" aria-labelledby="home-heading">
+        <picture className="home-hero-media">
+          <source media="(width < 768px)" srcSet="/images/hero-lagos-mobile.webp" type="image/webp" />
+          <img src="/images/hero-lagos-desktop.webp" alt="" fetchPriority="high" decoding="async" />
+        </picture>
         <div className="w home-hero-layout">
           <div className="home-hero-heading home-intro-heading">
             <span className="home-kicker">Ibadan, Nigeria</span>
@@ -79,15 +83,8 @@ export default function Home() {
             <a className="btn home-discover home-intro-button" href="#home-services">Discover more<Icon name="arrow" /></a>
           </div>
         </div>
+        <span className="home-hero-credit">Design inspiration</span>
       </section>
-
-
-      <figure className="home-photo-band">
-        <picture>
-          <source media="(max-width: 767px)" srcSet="/images/hero-mobile.webp" type="image/webp" />
-          <img src="/images/hero-desktop.webp" alt="Swimmer gliding through a clear blue swimming pool" loading="lazy" decoding="async" />
-        </picture>
-      </figure>
 
       <section className="home-services" id="home-services" aria-labelledby="home-services-heading">
         <div className="w">
