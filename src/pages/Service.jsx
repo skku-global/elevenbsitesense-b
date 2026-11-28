@@ -1,4 +1,4 @@
-import Drawing from '../components/Drawing.jsx'
+import BuildCutaway from '../components/BuildCutaway.jsx'
 import { ProjectImage } from '../components/Visuals.jsx'
 import { BeforeAfter } from '../components/Trust.jsx'
 import Slider from '../components/Slider.jsx'
@@ -7,6 +7,15 @@ import { useGallery } from '../components/GalleryModal.jsx'
 import { Seo, Hero, ServiceCard, Steps, Faq, Cta, Section } from '../components/Parts.jsx'
 import { BRAND, SITE, bySlug, POOL, breadcrumbLd, faqLd } from '../data/site.js'
 
+const poolHeroPhoto = {
+  src: '/images/pool-construction-hero.webp',
+  mobileSrc: '/images/pool-construction-hero-mobile.webp',
+  width: 1672,
+  height: 941,
+  alt: 'Turquoise mosaic pool with broad entry steps and a limestone deck',
+  label: 'Design inspiration',
+}
+
 export default function Service({ slug }) {
   const s = bySlug[slug]
   const isPool = s.group === 'pool'
@@ -14,7 +23,7 @@ export default function Service({ slug }) {
   const gallery = galleryFor(slug)
   const openGallery = useGallery()
   const preview = gallery.photos[0]
-  const heroDesign = first ? gallery.photos.find((photo) => photo.kind === 'inspiration') : undefined
+  const heroPhoto = first ? poolHeroPhoto : preview
   const path = `/${slug}/`
   const crumbs = [['/', 'Home'], ...(isPool ? (first ? [] : [[`/${POOL[0].slug}/`, 'Swimming pools']]) : [['/services/', 'Services']]), [path, s.title]]
   const ld = [
@@ -24,8 +33,8 @@ export default function Service({ slug }) {
   return (
     <>
       <Seo path={path} title={`${s.h1} | ${BRAND}`} desc={s.meta} ld={ld} />
-      <Hero h1={s.h1} p={s.intro} crumbs={crumbs} slug={slug} quoteService={slug} imagePhoto={heroDesign}
-        side={<aside className="plate"><Drawing active={s.part} name={s.title} />
+      <Hero h1={s.h1} p={s.intro} crumbs={crumbs} slug={slug} quoteService={slug} imagePhoto={heroPhoto}
+        side={<aside className="plate"><BuildCutaway selectedService={s} />
           <div className="cap"><span className="cn"><b>{s.title}</b></span><span className="cl">Highlighted in the building</span></div></aside>} />
       <section><div className="w cols">
         <div><h2>What’s included</h2><ul className="tick">{s.includes.map((i) => <li key={i}>{i}</li>)}</ul></div>

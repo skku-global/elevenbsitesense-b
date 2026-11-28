@@ -23,9 +23,15 @@ export function Seo({ path, title, desc, ld = [] }) {
 }
 
 export function Hero({ h1, p, crumbs = [], buttons = true, side = null, slug = 'swimming-pool-construction', home = false, imagePhoto, quoteService }) {
+  const responsivePhoto = imagePhoto?.mobileSrc
   return (
-    <div className={`hero${side ? ' two' : ''}${home ? ' hero-home' : ''}`}>
-      <ProjectImage src={imagePhoto?.src} alt={imagePhoto?.alt} width={imagePhoto?.width} height={imagePhoto?.height} slug={slug} fallbackSlug={home ? 'work' : 'hero'} decorative={!imagePhoto} eager className="hero-image" />
+    <div className={`hero${side ? ' two' : ''}${home ? ' hero-home' : ''}${responsivePhoto ? ' hero-with-responsive-photo' : ''}`}>
+      {responsivePhoto ? (
+        <picture className="hero-responsive-image">
+          <source media="(width < 768px)" srcSet={responsivePhoto} type="image/webp" />
+          <img src={imagePhoto.src} alt={imagePhoto.alt} width={imagePhoto.width} height={imagePhoto.height} fetchPriority="high" decoding="async" />
+        </picture>
+      ) : <ProjectImage src={imagePhoto?.src} alt={imagePhoto?.alt} width={imagePhoto?.width} height={imagePhoto?.height} slug={slug} fallbackSlug={home ? 'work' : 'hero'} decorative={!imagePhoto} eager className="hero-image" />}
       <div className="hero-overlay" aria-hidden="true" />
       <div className="w">
         <div className="hero-copy">

@@ -1,6 +1,8 @@
 import { useId, useState } from 'react'
 import { content } from '../data/content.js'
 import { ProjectImage } from './Visuals.jsx'
+import renovationBefore from '../assets/images/services/pool-renovation-and-repair/pool-before-renovation.webp'
+import renovationAfter from '../assets/images/services/pool-renovation-and-repair/restored-pool.webp'
 
 export function Stats() {
   const { stats } = content.trust
@@ -42,8 +44,8 @@ export function BeforeAfter() {
         <div className="comparison-copy"><span className="eyebrow">{comparison.eyebrow}</span><h2>{comparison.heading}</h2><p>{comparison.description}</p><p className="placeholder-note">{comparison.note}</p></div>
         <div>
           <div className="comparison" style={{ '--position': `${position}%` }}>
-            <ProjectImage slug={comparison.slug} index={comparison.after.index} alt={comparison.after.alt} stage="after" />
-            <div className="comparison-before"><ProjectImage slug={comparison.slug} index={comparison.before.index} alt={comparison.before.alt} stage="before" /></div>
+            <ProjectImage src={renovationAfter} slug={comparison.slug} alt={comparison.after.alt} stage="after" />
+            <div className="comparison-before"><ProjectImage src={renovationBefore} slug={comparison.slug} alt={comparison.before.alt} stage="before" /></div>
             <span className="comparison-label before">{comparison.before.label}</span><span className="comparison-label after">{comparison.after.label}</span>
             <span className="comparison-divider" aria-hidden="true"><span>‹ ›</span></span>
             <input id={id} type="range" min="0" max="100" value={position} onChange={(event) => setPosition(Number(event.target.value))} aria-label={comparison.controlLabel} aria-valuetext={`${position}% before, ${100 - position}% after`} />

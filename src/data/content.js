@@ -40,10 +40,10 @@ export const content = {
       "eyebrow": "From possibility to a place you love",
       "heading": "See the difference",
       "description": "A new chapter for your outdoor space, from the groundwork to the first swim.",
-      "note": "Illustrative preview · add a matched pair of real project photos",
+      "note": "Illustrative renovation concept",
       "slug": "pool-renovation-and-repair",
-      "before": { "index": 0, "label": "Before", "alt": "Pool before renovation" },
-      "after": { "index": 1, "label": "After", "alt": "Pool after renovation" },
+      "before": { "label": "Before", "alt": "Drained courtyard pool with worn tiles and waterline staining" },
+      "after": { "label": "After", "alt": "The same courtyard pool with new blue mosaic tiles and limestone coping" },
       "controlLabel": "Compare the pool before and after renovation",
       "instruction": "Drag to compare, or use the arrow keys"
     }

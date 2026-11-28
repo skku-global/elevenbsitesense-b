@@ -1,76 +1,46 @@
 {
   "service": "residential-swimming-pools",
   "classification": "Generated design inspiration, not completed client projects",
-  "sort": "Source modified time, oldest first",
-  "excluded": [],
+  "sort": "Curated display order",
+  "excluded": [
+    {
+      "source": "pooool1.jpeg",
+      "file": "01.webp",
+      "reason": "Outside the scope of this service gallery"
+    },
+    {
+      "source": "poooo2.jpeg",
+      "file": "02.webp",
+      "reason": "Outside the scope of this service gallery"
+    },
+    {
+      "source": "poooo3.jpeg",
+      "file": "03.webp",
+      "reason": "Outside the scope of this service gallery"
+    },
+    {
+      "source": "poooo4.jpeg",
+      "file": "04.webp",
+      "reason": "Outside the scope of this service gallery"
+    }
+  ],
   "images": [
     {
-      "file": "01.webp",
-      "thumbnail": "thumbnails/01.webp",
-      "alt": "Residential swimming pool design inspiration, image 1",
+      "file": "design-concept.webp",
+      "thumbnail": "thumbnails/design-concept.webp",
+      "alt": "Compact family pool with entry steps and pale coping in a private garden",
       "label": "Design inspiration",
       "kind": "inspiration",
-      "source": "pooool1.jpeg",
-      "sourceModifiedAt": "2026-11-25T12:59:27.397Z",
-      "sourceSha256": "57859c85c3cb86e55c21baec350c6005572080c7b842c0714e33342072c3debd",
-      "width": 1200,
-      "height": 896,
-      "bytes": 207800,
-      "quality": 90,
+      "source": "exec-0793cc64-d835-40b4-bb4d-e9476ea29112.png",
+      "sourceModifiedAt": "2026-11-27T20:55:34.975Z",
+      "sourceSha256": "81696898153f98ce61594fc2634b7ddcc55cba2152687cc1abdb35b8f9869b2b",
+      "width": 1400,
+      "height": 788,
+      "bytes": 223034,
+      "quality": 82,
       "thumbnailWidth": 600,
-      "thumbnailHeight": 448,
-      "thumbnailBytes": 42362
-    },
-    {
-      "file": "02.webp",
-      "thumbnail": "thumbnails/02.webp",
-      "alt": "Residential swimming pool design inspiration, image 2",
-      "label": "Design inspiration",
-      "kind": "inspiration",
-      "source": "poooo2.jpeg",
-      "sourceModifiedAt": "2026-11-25T12:59:51.966Z",
-      "sourceSha256": "15950128860689cb6d5496009d7baf307b0d9c1b2ee3648ac1e3dd0989b7abe6",
-      "width": 1200,
-      "height": 896,
-      "bytes": 235704,
-      "quality": 90,
-      "thumbnailWidth": 600,
-      "thumbnailHeight": 448,
-      "thumbnailBytes": 48400
-    },
-    {
-      "file": "03.webp",
-      "thumbnail": "thumbnails/03.webp",
-      "alt": "Residential swimming pool design inspiration, image 3",
-      "label": "Design inspiration",
-      "kind": "inspiration",
-      "source": "poooo3.jpeg",
-      "sourceModifiedAt": "2026-11-25T13:00:33.191Z",
-      "sourceSha256": "2750e131109d6edcced501ca24c7e6da50a890cb3c848b3be0a0d828767f84e5",
-      "width": 1200,
-      "height": 896,
-      "bytes": 224584,
-      "quality": 90,
-      "thumbnailWidth": 600,
-      "thumbnailHeight": 448,
-      "thumbnailBytes": 43544
-    },
-    {
-      "file": "04.webp",
-      "thumbnail": "thumbnails/04.webp",
-      "alt": "Residential swimming pool design inspiration, image 4",
-      "label": "Design inspiration",
-      "kind": "inspiration",
-      "source": "poooo4.jpeg",
-      "sourceModifiedAt": "2026-11-25T13:00:49.399Z",
-      "sourceSha256": "c3b8eb8bdca5638fd5138f79a05a7667fe5e4d23e381a6887627be446e25bf91",
-      "width": 1200,
-      "height": 896,
-      "bytes": 215832,
-      "quality": 90,
-      "thumbnailWidth": 600,
-      "thumbnailHeight": 448,
-      "thumbnailBytes": 43418
+      "thumbnailHeight": 338,
+      "thumbnailBytes": 42950
     },
     {
       "file": "05.webp",

@@ -1,9 +1,47 @@
 {
   "service": "interlock-paving",
   "classification": "Generated design inspiration, not completed client projects",
-  "sort": "Source modified time, oldest first",
-  "excluded": [],
+  "sort": "Curated display order",
+  "excluded": [
+    {
+      "source": "Interlock paving2.jpeg",
+      "file": "02.webp",
+      "reason": "Outside the scope of this service gallery"
+    },
+    {
+      "source": "Interlock paving3.jpeg",
+      "file": "03.webp",
+      "reason": "Outside the scope of this service gallery"
+    },
+    {
+      "source": "Interlock paving4.jpeg",
+      "file": "04.webp",
+      "reason": "Outside the scope of this service gallery"
+    },
+    {
+      "source": "Interlock paving8.jpeg",
+      "file": "08.webp",
+      "reason": "Outside the scope of this service gallery"
+    }
+  ],
   "images": [
+    {
+      "file": "design-concept.webp",
+      "thumbnail": "thumbnails/design-concept.webp",
+      "alt": "Concrete interlocking driveway pavers in a herringbone pattern with an edge drain",
+      "label": "Design inspiration",
+      "kind": "inspiration",
+      "source": "exec-3eef277d-830f-4f94-a8a6-b343289b5bd2.png",
+      "sourceModifiedAt": "2026-11-27T21:07:41.563Z",
+      "sourceSha256": "953002183d3195b2014be5c35cf50b876c67f4613194c0895a1f0e8ad6175948",
+      "width": 1400,
+      "height": 788,
+      "bytes": 246608,
+      "quality": 82,
+      "thumbnailWidth": 600,
+      "thumbnailHeight": 338,
+      "thumbnailBytes": 44984
+    },
     {
       "file": "01.webp",
       "thumbnail": "thumbnails/01.webp",
@@ -20,57 +58,6 @@
       "thumbnailWidth": 600,
       "thumbnailHeight": 448,
       "thumbnailBytes": 57468
-    },
-    {
-      "file": "02.webp",
-      "thumbnail": "thumbnails/02.webp",
-      "alt": "Interlock paving design inspiration, image 2",
-      "label": "Design inspiration",
-      "kind": "inspiration",
-      "source": "Interlock paving2.jpeg",
-      "sourceModifiedAt": "2026-11-26T16:02:53.262Z",
-      "sourceSha256": "a90a962173c8e90151fe69aafffc7a3af6d3e31e24f42f67436821817d9ac15a",
-      "width": 1200,
-      "height": 896,
-      "bytes": 256986,
-      "quality": 90,
-      "thumbnailWidth": 600,
-      "thumbnailHeight": 448,
-      "thumbnailBytes": 47138
-    },
-    {
-      "file": "03.webp",
-      "thumbnail": "thumbnails/03.webp",
-      "alt": "Interlock paving design inspiration, image 3",
-      "label": "Design inspiration",
-      "kind": "inspiration",
-      "source": "Interlock paving3.jpeg",
-      "sourceModifiedAt": "2026-11-26T16:03:03.372Z",
-      "sourceSha256": "1ab8cf9967785abdee46592547a5c00fd6f282e989d1b79723f831caedd1aad1",
-      "width": 1200,
-      "height": 896,
-      "bytes": 302694,
-      "quality": 90,
-      "thumbnailWidth": 600,
-      "thumbnailHeight": 448,
-      "thumbnailBytes": 51662
-    },
-    {
-      "file": "04.webp",
-      "thumbnail": "thumbnails/04.webp",
-      "alt": "Interlock paving design inspiration, image 4",
-      "label": "Design inspiration",
-      "kind": "inspiration",
-      "source": "Interlock paving4.jpeg",
-      "sourceModifiedAt": "2026-11-26T16:03:25.573Z",
-      "sourceSha256": "323ff10f951530da5d10446265389bde1c407228d58dbbd50982004edf4facbe",
-      "width": 1200,
-      "height": 896,
-      "bytes": 348716,
-      "quality": 90,
-      "thumbnailWidth": 600,
-      "thumbnailHeight": 448,
-      "thumbnailBytes": 71556
     },
     {
       "file": "05.webp",
@@ -122,23 +109,6 @@
       "thumbnailWidth": 600,
       "thumbnailHeight": 448,
       "thumbnailBytes": 52060
-    },
-    {
-      "file": "08.webp",
-      "thumbnail": "thumbnails/08.webp",
-      "alt": "Interlock paving design inspiration, image 8",
-      "label": "Design inspiration",
-      "kind": "inspiration",
-      "source": "Interlock paving8.jpeg",
-      "sourceModifiedAt": "2026-11-26T16:08:07.049Z",
-      "sourceSha256": "c43ef0a47948d0445592eeed5b20b459c2ff6adbadc1836c45bf809e75044b67",
-      "width": 1200,
-      "height": 896,
-      "bytes": 348620,
-      "quality": 90,
-      "thumbnailWidth": 600,
-      "thumbnailHeight": 448,
-      "thumbnailBytes": 67150
     },
     {
       "file": "09.webp",

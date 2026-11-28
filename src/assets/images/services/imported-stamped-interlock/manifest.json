@@ -1,9 +1,37 @@
 {
   "service": "imported-stamped-interlock",
   "classification": "Generated design inspiration, not completed client projects",
-  "sort": "Source modified time, oldest first",
-  "excluded": [],
+  "sort": "Curated display order",
+  "excluded": [
+    {
+      "source": "Imported stamped interlock3.jpeg",
+      "file": "04.webp",
+      "reason": "Outside the scope of this service gallery"
+    },
+    {
+      "source": "Imported stamped interlock7.jpeg",
+      "file": "08.webp",
+      "reason": "Outside the scope of this service gallery"
+    }
+  ],
   "images": [
+    {
+      "file": "design-concept.webp",
+      "thumbnail": "thumbnails/design-concept.webp",
+      "alt": "Decorative stamped courtyard paving with a staggered stone pattern and contrasting border",
+      "label": "Design inspiration",
+      "kind": "inspiration",
+      "source": "exec-de1b8f5f-133a-4aee-ab1b-ef5bcb685886.png",
+      "sourceModifiedAt": "2026-11-27T21:06:48.504Z",
+      "sourceSha256": "79860faa69af2acfb3847b37f3ec3ccfc1a3ad7d194c0bbcdc3c280631230e2e",
+      "width": 1400,
+      "height": 788,
+      "bytes": 196654,
+      "quality": 82,
+      "thumbnailWidth": 600,
+      "thumbnailHeight": 338,
+      "thumbnailBytes": 38356
+    },
     {
       "file": "01.webp",
       "thumbnail": "thumbnails/01.webp",
@@ -56,23 +84,6 @@
       "thumbnailBytes": 61568
     },
     {
-      "file": "04.webp",
-      "thumbnail": "thumbnails/04.webp",
-      "alt": "Imported stamped interlock design inspiration, image 4",
-      "label": "Design inspiration",
-      "kind": "inspiration",
-      "source": "Imported stamped interlock3.jpeg",
-      "sourceModifiedAt": "2026-11-26T16:09:41.135Z",
-      "sourceSha256": "7b75b43e474c626192aa2790c9b24986475714e953c58aa1ad7ac66258920fb8",
-      "width": 1200,
-      "height": 896,
-      "bytes": 306768,
-      "quality": 90,
-      "thumbnailWidth": 600,
-      "thumbnailHeight": 448,
-      "thumbnailBytes": 58538
-    },
-    {
       "file": "05.webp",
       "thumbnail": "thumbnails/05.webp",
       "alt": "Imported stamped interlock design inspiration, image 5",
@@ -122,23 +133,6 @@
       "thumbnailWidth": 600,
       "thumbnailHeight": 448,
       "thumbnailBytes": 61736
-    },
-    {
-      "file": "08.webp",
-      "thumbnail": "thumbnails/08.webp",
-      "alt": "Imported stamped interlock design inspiration, image 8",
-      "label": "Design inspiration",
-      "kind": "inspiration",
-      "source": "Imported stamped interlock7.jpeg",
-      "sourceModifiedAt": "2026-11-26T16:10:22.149Z",
-      "sourceSha256": "4836ed0a8916baf69b3cfcc625f5db6e0d833d508f8b9774d07b3c9a6e0c1ef7",
-      "width": 1200,
-      "height": 896,
-      "bytes": 344548,
-      "quality": 90,
-      "thumbnailWidth": 600,
-      "thumbnailHeight": 448,
-      "thumbnailBytes": 64042
     },
     {
       "file": "09.webp",

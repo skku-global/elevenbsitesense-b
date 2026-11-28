@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Drawing from '../components/Drawing.jsx'
+import BuildCutaway from '../components/BuildCutaway.jsx'
 import Slider from '../components/Slider.jsx'
 import { Seo, ServiceCard, Steps, Cta } from '../components/Parts.jsx'
 import { Icon, ProjectImage } from '../components/Visuals.jsx'
@@ -11,6 +12,7 @@ import { company } from '../data/company.js'
 import abroadClient from '../assets/images/abroad/abroad-client.jpeg'
 
 const STAGES = [[0, 'Excavating the site'], [0.9, 'Pouring the footing'], [1.3, 'Raising the columns'], [2.6, 'Casting the slabs'], [3.4, 'Floors and paving'], [4.2, 'Ceilings and interiors'], [4.8, 'Painting'], [5.7, 'Handed over. Hover a service.']]
+const buildingServices = [MAIN, ...OTHER]
 
 const org = {
   '@context': 'https://schema.org', '@type': 'GeneralContractor', name: BRAND, legalName: LEGAL, url: SITE,
@@ -21,24 +23,14 @@ const org = {
 export default function Home() {
   const [run, setRun] = useState(0)
   const [active, setActive] = useState(null)
-  const [buildStarted, setBuildStarted] = useState(false)
+  const [showBuildStages, setShowBuildStages] = useState(false)
   const [cap, setCap] = useState({ name: STAGES[0][1], label: 'Stage 1 of 7' })
-  const buildPanel = useRef(null)
   const activePart = useRef(null)
   const { stats } = content.home
+  const selectedService = buildingServices.find((service) => service.part === active) ?? MAIN
 
   useEffect(() => {
-    const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
-    if (motion.matches || !('IntersectionObserver' in window)) { setBuildStarted(true); return }
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setBuildStarted(true); observer.disconnect() }
-    }, { threshold: 0.15 })
-    if (buildPanel.current) observer.observe(buildPanel.current)
-    return () => observer.disconnect()
-  }, [])
-
-  useEffect(() => {
-    if (!buildStarted) return
+    if (!showBuildStages) return
     activePart.current = null
     setActive(null)
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -49,14 +41,13 @@ export default function Home() {
       if (!activePart.current) setCap({ name, label: i < STAGES.length - 1 ? 'Stage ' + (i + 1) + ' of ' + (STAGES.length - 1) : '' })
     }, sec * 1000))
     return () => timers.forEach(clearTimeout)
-  }, [run, buildStarted])
+  }, [run, showBuildStages])
 
-  const hover = (s) => {
+  const selectService = (s) => {
     activePart.current = s.part
     setCap({ name: s.title, label: s.level })
     setActive(s.part)
   }
-  const rows = [MAIN, ...OTHER]
 
   return (
     <div className="home-shell">
@@ -103,15 +94,30 @@ export default function Home() {
             <p>We build swimming pools from the first dig to the first swim, then pave, tile and finish everything around them. Based in Ibadan, building for clients in Nigeria and abroad.</p>
           </div>
           <div className="stage">
-            <aside className="plate" ref={buildPanel}>
-              <Drawing key={run + '-' + buildStarted} active={active} anim={buildStarted} />
-              <div className="cap"><span className="cn"><b>{cap.name}</b></span><span className="cl">{cap.label}</span></div>
-              <button className="rp" type="button" onClick={() => setRun((n) => n + 1)}>Replay the build<Icon name="arrow" /></button>
+            <aside className="plate">
+              {showBuildStages ? (
+                <>
+                  <Drawing key={run} active={active} anim />
+                  <div className="cap"><span className="cn"><b>{cap.name}</b></span><span className="cl">{cap.label}</span></div>
+                </>
+              ) : (
+                <>
+                  <BuildCutaway services={buildingServices} selectedService={selectedService} onSelect={selectService} />
+                  <div className="cap cutaway-caption">
+                    <div role="status"><b>{selectedService.title}</b><p>{selectedService.includes[0]}</p></div>
+                    <Link to={'/' + selectedService.slug + '/'}>View service</Link>
+                  </div>
+                </>
+              )}
+              <div className="cutaway-actions">
+                <button className="rp" type="button" onClick={() => setShowBuildStages((value) => !value)}>{showBuildStages ? 'Back to cutaway' : 'Watch the build stages'}</button>
+                {showBuildStages && <button className="rp" type="button" onClick={() => setRun((n) => n + 1)}>Replay the build</button>}
+              </div>
             </aside>
             <ul className="sl">
-              {rows.map((s) => (
-                <li key={s.slug} className={[s === MAIN ? 'main' : '', active === s.part ? 'is-active' : ''].filter(Boolean).join(' ')}>
-                  <Link to={'/' + s.slug + '/'} onMouseEnter={() => hover(s)} onFocus={() => hover(s)}><b>{s.title}</b><small>{s.level}</small></Link>
+              {buildingServices.map((s) => (
+                <li key={s.slug} className={[s === MAIN ? 'main' : '', (showBuildStages ? active === s.part : selectedService === s) ? 'is-active' : ''].filter(Boolean).join(' ')}>
+                  <Link to={'/' + s.slug + '/'} onMouseEnter={() => selectService(s)} onFocus={() => selectService(s)}><b>{s.title}</b><small>{s.level}</small></Link>
                 </li>
               ))}
             </ul>

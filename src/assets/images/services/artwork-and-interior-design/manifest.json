@@ -1,9 +1,32 @@
 {
   "service": "artwork-and-interior-design",
   "classification": "Generated design inspiration, not completed client projects",
-  "sort": "Source modified time, oldest first",
-  "excluded": [],
+  "sort": "Curated display order",
+  "excluded": [
+    {
+      "source": "Artwork and interior design9.jpeg",
+      "file": "09.webp",
+      "reason": "Outside the scope of this service gallery"
+    }
+  ],
   "images": [
+    {
+      "file": "design-concept.webp",
+      "thumbnail": "thumbnails/design-concept.webp",
+      "alt": "A furnished living room with large abstract art on a textured feature wall",
+      "label": "Design inspiration",
+      "kind": "inspiration",
+      "source": "exec-2badbd53-e0e2-4bce-8346-819ba85e1215.png",
+      "sourceModifiedAt": "2026-11-27T21:00:49.754Z",
+      "sourceSha256": "be36f897383f1f49dfb0fee1ac61b0f527646cc9aa635ef1950adfdbe5ae6772",
+      "width": 1400,
+      "height": 933,
+      "bytes": 306918,
+      "quality": 82,
+      "thumbnailWidth": 600,
+      "thumbnailHeight": 400,
+      "thumbnailBytes": 49820
+    },
     {
       "file": "01.webp",
       "thumbnail": "thumbnails/01.webp",
@@ -139,23 +162,6 @@
       "thumbnailWidth": 600,
       "thumbnailHeight": 448,
       "thumbnailBytes": 44186
-    },
-    {
-      "file": "09.webp",
-      "thumbnail": "thumbnails/09.webp",
-      "alt": "Artwork and interior design design inspiration, image 9",
-      "label": "Design inspiration",
-      "kind": "inspiration",
-      "source": "Artwork and interior design9.jpeg",
-      "sourceModifiedAt": "2026-11-26T16:00:15.668Z",
-      "sourceSha256": "898b44cdf68205afe72d7735b0a8fbf71a02e6d9a4d29f12438e4da8e52aac49",
-      "width": 1200,
-      "height": 896,
-      "bytes": 214648,
-      "quality": 90,
-      "thumbnailWidth": 600,
-      "thumbnailHeight": 448,
-      "thumbnailBytes": 45044
     },
     {
       "file": "10.webp",

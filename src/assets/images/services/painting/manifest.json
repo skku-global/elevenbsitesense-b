@@ -1,9 +1,32 @@
 {
   "service": "painting",
   "classification": "Generated design inspiration, not completed client projects",
-  "sort": "Source modified time, oldest first",
-  "excluded": [],
+  "sort": "Curated display order",
+  "excluded": [
+    {
+      "source": "Painting9.jpeg",
+      "file": "09.webp",
+      "reason": "Outside the scope of this service gallery"
+    }
+  ],
   "images": [
+    {
+      "file": "design-concept.webp",
+      "thumbnail": "thumbnails/design-concept.webp",
+      "alt": "Smooth ivory walls and a matte olive painted accent wall with clean trim lines",
+      "label": "Design inspiration",
+      "kind": "inspiration",
+      "source": "exec-53c8d539-553c-4af3-b92f-16c3f1678921.png",
+      "sourceModifiedAt": "2026-11-27T21:07:13.920Z",
+      "sourceSha256": "ec531f445eda475550609ecf17e9a213259151bd8607d9e0677477b09c5990d3",
+      "width": 1400,
+      "height": 933,
+      "bytes": 80672,
+      "quality": 82,
+      "thumbnailWidth": 600,
+      "thumbnailHeight": 400,
+      "thumbnailBytes": 15552
+    },
     {
       "file": "01.webp",
       "thumbnail": "thumbnails/01.webp",
@@ -139,23 +162,6 @@
       "thumbnailWidth": 600,
       "thumbnailHeight": 448,
       "thumbnailBytes": 12940
-    },
-    {
-      "file": "09.webp",
-      "thumbnail": "thumbnails/09.webp",
-      "alt": "Painting design inspiration, image 9",
-      "label": "Design inspiration",
-      "kind": "inspiration",
-      "source": "Painting9.jpeg",
-      "sourceModifiedAt": "2026-11-26T16:13:19.454Z",
-      "sourceSha256": "89f8e26ce7fdaf15b7e3c71aea198ee0d517cc68fd158f51c56f91da3ded4fed",
-      "width": 1200,
-      "height": 896,
-      "bytes": 125562,
-      "quality": 90,
-      "thumbnailWidth": 600,
-      "thumbnailHeight": 448,
-      "thumbnailBytes": 23582
     },
     {
       "file": "10.webp",
