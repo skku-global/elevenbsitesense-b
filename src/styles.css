@@ -475,8 +475,36 @@ footer li { list-style: none; }
 .home-build .cap { padding-top: 18px; color: var(--home-grey); border-color: #ffffff24; font-size: 10px; line-height: 1.7; }
 .home-build .cap b { color: #d9d5cd; font-weight: 400; }
 .cutaway-hint { margin: 0 0 10px; color: #d9d5cd; font-size: 13px; }
+.home-build .plate:has(.cutaway-view).reveal-pending { opacity: 1; transform: none; }
 .cutaway-view { position: relative; background: #191919; overflow: hidden; aspect-ratio: 3 / 2; }
 .cutaway-view picture, .cutaway-view img { display: block; width: 100%; height: auto; }
+.cutaway-assembly { --cutaway-art: url('/images/build-cutaway.webp'); display: none; position: absolute; inset: 0; pointer-events: none; }
+.cutaway-layer { position: absolute; inset: 0; background: var(--cutaway-art) center / 100% 100% no-repeat; }
+.cutaway-layer--foundation {
+  clip-path: polygon(evenodd,
+    1.2% 63.7%, 17.8% 62.4%, 34% 68.1%, 40% 73.3%, 49.5% 80.5%, 61% 78%, 75% 75%, 85% 72%, 93.3% 72.1%, 97.2% 72%, 98% 74.7%, 52.2% 90.1%, 9.5% 99.6%, 1.2% 65%, 1.2% 63.7%,
+    3.3% 64.1%, 17.1% 63.2%, 39.6% 83.4%, 12.2% 90%, 3.3% 64.1%, 1.2% 63.7%);
+}
+.cutaway-layer--ground-floor {
+  clip-path: polygon(22% 44.5%, 34% 46.5%, 57% 46.3%, 93.9% 44.3%, 94% 70%, 96.5% 72.5%, 85% 72.6%, 75% 75.7%, 61% 79.3%, 50.5% 83%, 40% 76.5%, 34% 70.5%, 21.5% 64%, 15% 63%, 14% 49%, 22% 56%);
+}
+.cutaway-layer--upper-floor {
+  clip-path: polygon(22% 29%, 38.3% 14%, 49.1% 13%, 53.4% 10%, 59% 10%, 68.5% 7%, 97.8% 13.9%, 93.5% 16.2%, 93.9% 46%, 54% 48%, 34% 46%, 22% 45%);
+}
+.cutaway-layer--roof {
+  clip-path: polygon(21.8% 29.3%, 38.5% 13.1%, 54.2% 5.6%, 59% 8.1%, 68.6% 2.8%, 97.9% 13.8%, 97.9% 15.9%, 93.3% 16.3%, 82.7% 14%, 68.2% 10.8%, 60.2% 9.2%, 53.4% 15%, 39.5% 15.5%, 23% 30%);
+}
+.cutaway-layer--pool { clip-path: polygon(3.2% 64%, 17.2% 63.1%, 39.7% 83.4%, 12.1% 90.2%); }
+.cutaway-view[data-assembling] { background: radial-gradient(ellipse at 50% 55%, #28231d, #171717 76%); }
+.cutaway-view[data-assembling] .cutaway-assembly { display: block; }
+.cutaway-view[data-assembling] > picture { position: relative; z-index: 1; opacity: var(--cutaway-poster, 0); }
+.cutaway-view[data-assembling] .cutaway-marker { visibility: hidden; }
+@media (width < 768px) {
+  .cutaway-assembly { --cutaway-art: url('/images/build-cutaway-mobile.webp'); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cutaway-motion-hint { display: none; }
+}
 .cutaway-marker { position: absolute; z-index: 1; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; transform: translate(-50%, -50%); border: 0; border-radius: 50%; background: transparent; }
 button.cutaway-marker { cursor: pointer; }
 .cutaway-marker::before { content: '+'; display: grid; place-items: center; width: 21px; height: 21px; border: 1px solid #f4d09b; border-radius: 50%; background: #171411; color: #f4d09b; font: 600 17px/1 var(--f); box-shadow: 0 2px 8px #000b; }
@@ -706,6 +734,11 @@ button.cutaway-marker { cursor: pointer; }
   .service-gallery { width: min(100%, 54rem, 78svh); margin-inline: auto; }
   .service-gallery .sv { aspect-ratio: 3 / 2; }
   .service-gallery .gallery-photo img { object-fit: contain; }
+}
+
+@media (min-width: 1120px) {
+  .service-gallery { width: min(100%, 60rem, 92svh); }
+  .service-gallery .sv { aspect-ratio: 8 / 5; }
 }
 
 .home-shell .home-hero { position: relative; isolation: isolate; overflow: hidden; }

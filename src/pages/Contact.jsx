@@ -86,12 +86,17 @@ export default function Contact() {
             <textarea name="message" rows={5} required minLength={20} maxLength={enquiryLimits.message} disabled={!ready} placeholder="Location of the plot, size, and what you have in mind" {...field('message')} />{err('message')}
           </label>
           <button className="btn" type="submit" disabled={!ready || status.kind === 'sending'}>Send enquiry</button>
-          <p className="msg" role="status" aria-live="polite">{ready ? status.text : <>You can also request a quote by <a href={`tel:+${PHONES[0].international}`}>phone</a>, <a href={`https://wa.me/${PHONES[0].international}`}>WhatsApp</a> or <a href={`mailto:${EMAIL}`}>email</a>.</>}</p>
+          <p className="msg" role="status" aria-live="polite">{ready ? status.text : <>You can also request a quote by <a href={`tel:+${PHONES[0].international}`}>phone</a>, <a href={`https://wa.me/${company.whatsapp}`}>WhatsApp</a> or <a href={`mailto:${EMAIL}`}>email</a>.</>}</p>
         </form>
         <div className="contact-info">
           <h2>Or reach us directly</h2>
           <ul className="tick">
-            {PHONES.map(p => <li key={p.number}><a href={`tel:+${p.international}`}>Call {p.number}</a> · <a aria-label={`WhatsApp ${p.number}`} href={`https://wa.me/${p.international}`}>WhatsApp</a></li>)}
+            {PHONES.map(p => (
+              <li key={p.number}>
+                <a href={`tel:+${p.international}`}>Call {p.number}</a>
+                {p.international === company.whatsapp && <> · <a aria-label={`WhatsApp ${p.number}`} href={`https://wa.me/${company.whatsapp}`}>WhatsApp</a></>}
+              </li>
+            ))}
             <li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
             <li>{ADDR}</li>
           </ul>
